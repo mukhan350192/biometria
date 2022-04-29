@@ -32,7 +32,7 @@ class BiometriaController extends Controller
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             $token = $response['access']['hash'];
-            $url = "https://test2.1cb.kz/fcbid-otp/api/v1/send-code";
+            $url = "https://secure2.1cb.kz/fcbid-otp/api/v1/send-code";
             $uuid = Str::uuid()->toString();
             $headers = [
                 'Authorization' => 'Bearer ' . $token,
