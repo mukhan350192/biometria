@@ -22,7 +22,7 @@ class BiometriaController extends Controller
                 break;
             }
             $client = new Client(['verify' => false]);
-            $response = $client->get('https://test2.1cb.kz/fcbid-otp/api/v1/login', [
+            $response = $client->get('https://secure2.1cb.kz/fcbid-otp/api/v1/login', [
                 'headers' => [
                     'Authorization' => 'Basic ' . base64_encode('7015382439:7015382439'),
                     'Content-Type' => 'application/json',
