@@ -52,4 +52,7 @@ class BiometriaController extends Controller
         }while(false);
         return response()->json($result);
     }
+    public function test(){
+        echo "es";
+    }
 }
