@@ -48,6 +48,7 @@ class BiometriaController extends Controller
                 'form_params' => $body,
             ]);
             $response = $result->getBody()->getContents();
+            var_dump($headers);
             var_dump($response);
         }while(false);
         return response()->json($result);
