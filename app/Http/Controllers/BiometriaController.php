@@ -45,7 +45,7 @@ class BiometriaController extends Controller
             ];
             $result = $client->post($url, [
                 'headers' => $headers,
-                'form_params' => $body,
+                'body' => $body,
             ]);
             $response = $result->getBody()->getContents();
             var_dump($headers);
