@@ -106,6 +106,7 @@ class BiometriaController extends Controller
                 'Authorization' => 'Bearer ' . $token,
                 'RequestID' => $uuid,
                 'Content-Type' => 'application/json',
+                'Consent-Confirmed' => 1,
             ];
             $body = [
                 'ciin' => $iin,
