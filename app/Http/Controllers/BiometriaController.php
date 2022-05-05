@@ -96,7 +96,7 @@ class BiometriaController extends Controller
             }
             $client = new Client(['verify' => false]);
 
-            $data = DB::table('first_data')->where('iin',$iin)->first();
+            $data = DB::table('first_data')->where('iin',$iin)->orderByDesc('id')->first();
             $uuid = $data->requestID;
             $token = $data->token;
 
@@ -122,8 +122,7 @@ class BiometriaController extends Controller
             ]);
             $response = $res->getBody()->getContents();
             $s = base64_decode($response);
-            var_dump($response);
-
+            Storage::put('/',$response);
         }while(false);
         return response()->json($result);
     }
