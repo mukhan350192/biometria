@@ -47,9 +47,17 @@ class BiometriaController extends Controller
                 'headers' => $headers,
                 'body' => json_encode($body),
             ]);
+            $status = $result->getStatusCode();
             $response = $result->getBody()->getContents();
-            var_dump($headers);
-            var_dump($response);
+            if ($status == 200 && $response->responseCode == 'PROFILE_DOCUMENT_ACCESS_SUCCESS'){
+                $result['success'] = true;
+                break;
+            }
+            if ($status == 400){
+                $result['success'] = false;
+                $result['message'] = 'Попробуйте позже';
+                break;
+            }
         }while(false);
         return response()->json($result);
     }
