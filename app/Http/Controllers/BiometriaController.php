@@ -54,12 +54,12 @@ class BiometriaController extends Controller
                 'iin' => $iin,
                 'phone' => $phone,
             ];
-            $result = $client->post($url, [
+            $res = $client->post($url, [
                 'headers' => $headers,
                 'body' => json_encode($body),
             ]);
-            $status = $result->getStatusCode();
-            $response = $result->getBody()->getContents();
+            $status = $res->getStatusCode();
+            $response = $res->getBody()->getContents();
             $response = json_decode($response, true);
 
             if ($status == 200 && $response['responseCode'] == 'PROFILE_DOCUMENT_ACCESS_SUCCESS'){
