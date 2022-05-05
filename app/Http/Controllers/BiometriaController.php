@@ -119,8 +119,8 @@ class BiometriaController extends Controller
             ]);
             $response = $res->getBody()->getContents();
             $s = base64_decode($response);
-            //var_dump($response);
-            var_dump($s);
+            var_dump($response);
+
         }while(false);
         return response()->json($result);
     }
