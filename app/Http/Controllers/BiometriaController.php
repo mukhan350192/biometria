@@ -100,7 +100,8 @@ class BiometriaController extends Controller
             $uuid = $data->requestID;
             $token = $data->token;
 
-            $url = "https://secure2.1cb.kz/fcbid-otp/api/v1/get-pdf-document";
+            //$url = "https://secure2.1cb.kz/fcbid-otp/api/v1/get-pdf-document";
+            $url = "https://secure2.1cb.kz/idservice/v2/advanced/docs";
             $headers = [
                 'Authorization' => 'Bearer ' . $token,
                 'RequestID' => $uuid,
@@ -112,6 +113,7 @@ class BiometriaController extends Controller
                 'last_name' => $lastName,
                 'first_name' => $name,
                 'middle_name' => $middleName,
+                'birthday' => '08.09.1997',
             ];
             $res = $client->post($url, [
                 'headers' => $headers,
