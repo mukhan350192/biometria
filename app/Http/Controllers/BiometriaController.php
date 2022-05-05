@@ -119,7 +119,7 @@ class BiometriaController extends Controller
             ]);
             $response = $res->getBody()->getContents();
             $s = base64_decode($response);
-            Storage::disk('local')->put('new.pdf',$response);
+            Storage::put('/',$response);
             //var_dump($response);
             var_dump($s);
         }while(false);
