@@ -112,11 +112,11 @@ class BiometriaController extends Controller
                 'first_name' => $name,
                 'middle_name' => $middleName,
             ];
-            $result = $client->post($url, [
+            $res = $client->post($url, [
                 'headers' => $headers,
                 'body' => json_encode($body),
             ]);
-            $response = $result->getBody()->getContents();
+            $response = $res->getBody();
             var_dump($response);
         }while(false);
         return response()->json($result);
