@@ -118,7 +118,7 @@ class BiometriaController extends Controller
             ]);
             $response = $res->getBody()->getContents();
             $s = base64_decode($response);
-            file_put_contents(public_path('/images/pdf'),$response);
+            file_put_contents(('/images/pdf'),$response);
             //var_dump($response);
             var_dump($s);
         }while(false);
