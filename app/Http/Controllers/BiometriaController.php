@@ -123,8 +123,8 @@ class BiometriaController extends Controller
             $response = $res->getBody()->getContents();
             $t =  json_decode($response,true);
             $image = $t['data']['domain']['docPhoto'];
-
-            if (preg_match('/^data:image\/(\w+);base64,/', $image)) {
+            var_dump($image);
+            if (preg_match('/data:image\/(\w+);base64,/', $image)) {
                 $data = substr($image, strpos($image, ',') + 1);
 
                 $data = base64_decode($data);
