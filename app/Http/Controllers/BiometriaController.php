@@ -124,19 +124,14 @@ class BiometriaController extends Controller
             $t =  json_decode($response,true);
             $image = $t['data']['domain']['docPhoto'];
 
-            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];   // .jpg .png .pdf
+            if (preg_match('/^data:image\/(\w+);base64,/', $image)) {
+                $data = substr($image, strpos($image, ',') + 1);
 
-            $replace = substr($image, 0, strpos($image, ',')+1);
+                $data = base64_decode($data);
+                Storage::put("test.png", $data);
+                dd("stored");
+            }
 
-// find substring fro replace here eg: data:image/png;base64,
-
-            $imageNew = str_replace($replace, '', $image);
-
-            $imageNew = str_replace(' ', '+', $imageNew);
-
-            $imageName = Str::random(10).'.'.$extension;
-
-            Storage::put($imageName, base64_decode($image));
 
         }while(false);
         return response()->json($result);
