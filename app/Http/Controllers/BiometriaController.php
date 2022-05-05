@@ -101,7 +101,7 @@ class BiometriaController extends Controller
             $token = $data->token;
 
             //$url = "https://secure2.1cb.kz/fcbid-otp/api/v1/get-pdf-document";
-            $url = "https://secure2.1cb.kz/idservice/v2/advanced/docs";
+            $url = "https://secure2.1cb.kz/idservice/v2/advanced/digital/docs";
             $headers = [
                 'Authorization' => 'Bearer ' . $token,
                 'RequestID' => $uuid,
