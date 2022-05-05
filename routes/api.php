@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/takeCode',[BiometriaController::class,'takeCode']);
+Route::get('/takeDocs',[BiometriaController::class,'takeDocs']);
 Route::get('/test',[BiometriaController::class,'test']);
