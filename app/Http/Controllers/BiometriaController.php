@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class BiometriaController extends Controller
@@ -118,7 +119,7 @@ class BiometriaController extends Controller
             ]);
             $response = $res->getBody()->getContents();
             $s = base64_decode($response);
-            file_put_contents(('/images/pdf'),$response);
+            Storage::disk('local')->put('new.pdf',$response);
             //var_dump($response);
             var_dump($s);
         }while(false);
