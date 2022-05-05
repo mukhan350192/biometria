@@ -121,8 +121,11 @@ class BiometriaController extends Controller
                 'body' => json_encode($body),
             ]);
             $response = $res->getBody()->getContents();
+            $t =  json_decode($response,true);
+            $u = json_encode($response);
             $s = base64_decode($response);
-            Storage::put('/',$response);
+            var_dump($t);
+            var_dump($u);
         }while(false);
         return response()->json($result);
     }
