@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class BiometriaController extends Controller
@@ -34,6 +36,14 @@ class BiometriaController extends Controller
             $token = $response['access']['hash'];
             $url = "https://secure2.1cb.kz/fcbid-otp/api/v1/send-code";
             $uuid = Str::uuid()->toString();
+            DB::table('first_data')->insertGetId([
+                'requestID' => $uuid,
+                'token' => $token,
+                'iin' => $iin,
+                'phone' => $phone,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
             $headers = [
                 'Authorization' => 'Bearer ' . $token,
                 'RequestID' => $uuid,
@@ -50,6 +60,7 @@ class BiometriaController extends Controller
             $status = $result->getStatusCode();
             $response = $result->getBody()->getContents();
             $response = json_decode($response, true);
+
             if ($status == 200 && $response['responseCode'] == 'PROFILE_DOCUMENT_ACCESS_SUCCESS'){
                 $result['success'] = true;
                 break;
@@ -83,18 +94,12 @@ class BiometriaController extends Controller
                 break;
             }
             $client = new Client(['verify' => false]);
-            $response = $client->get('https://secure2.1cb.kz/fcbid-otp/api/v1/login', [
-                'headers' => [
-                    'Authorization' => 'Basic ' . base64_encode('7471656497:970908350192'),
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                ]
-            ]);
-            $response = $response->getBody()->getContents();
-            $response = json_decode($response, true);
-            $token = $response['access']['hash'];
+
+            $data = DB::table('first_data')->where('iin',$iin)->first();
+            $uuid = $data->requestID;
+            $token = $data->token;
+
             $url = "https://secure2.1cb.kz/fcbid-otp/api/v1/get-pdf-document";
-            $uuid = Str::uuid()->toString();
             $headers = [
                 'Authorization' => 'Bearer ' . $token,
                 'RequestID' => $uuid,
