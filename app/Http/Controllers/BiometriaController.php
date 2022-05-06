@@ -11,7 +11,8 @@ use Illuminate\Support\Str;
 
 class BiometriaController extends Controller
 {
-    public function takeCode(Request $request){
+    public function takeCode(Request $request)
+    {
         $iin = $request->input('iin');
         $phone = $request->input('phone');
         $result['success'] = false;
@@ -62,41 +63,43 @@ class BiometriaController extends Controller
             $response = $res->getBody()->getContents();
             $response = json_decode($response, true);
 
-            if ($status == 200 && $response['responseCode'] == 'PROFILE_DOCUMENT_ACCESS_SUCCESS'){
+            if ($status == 200 && $response['responseCode'] == 'PROFILE_DOCUMENT_ACCESS_SUCCESS') {
                 $result['success'] = true;
                 break;
             }
-            if ($status == 400){
+            if ($status == 400) {
                 $result['success'] = false;
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
-    public function takeDocs(Request $request){
+
+    public function takeDocs(Request $request)
+    {
         $code = $request->input('code');
         $name = $request->input('name');
         $lastName = $request->input('lastName');
         $middleName = $request->input('middleName');
         $iin = $request->input('iin');
         $result['success'] = false;
-        do{
-            if (!$code){
+        do {
+            if (!$code) {
                 $result['message'] = 'Не передан код';
                 break;
             }
-            if (!$name){
+            if (!$name) {
                 $result['message'] = 'Не передан имя';
                 break;
             }
-            if (!$middleName){
+            if (!$middleName) {
                 $result['message'] = 'Не передан фамилия';
                 break;
             }
             $client = new Client(['verify' => false]);
 
-            $data = DB::table('first_data')->where('iin',$iin)->orderByDesc('id')->first();
+            $data = DB::table('first_data')->where('iin', $iin)->orderByDesc('id')->first();
             $uuid = $data->requestID;
             $token = $data->token;
 
@@ -121,13 +124,44 @@ class BiometriaController extends Controller
                 'body' => json_encode($body),
             ]);
             $response = $res->getBody()->getContents();
-            $t =  json_decode($response,true);
+            $t = json_decode($response, true);
             $image = $t['data']['domain']['docPhoto'];
+            $firstName = $t['data']['domain']['firstName'];
+            $lastName = $t['data']['domain']['lastName'];
+            $middleName = $t['data']['domain']['middleName'];
+            $docIssueDate = $t['data']['domain']['docIssueDate'];
+            $docExpirationDate = $t['data']['domain']['docExpirationDate'];
+            $docNumber = $t['data']['domain']['docNumber'];
+            $user = DB::table('user_data')->where('iin',$iin)->first();
+            if ($user){
+                DB::table('user_data')->where('iin',$iin)->update([
+                    'firstName' => $firstName,
+                    'lastName' => $lastName,
+                    'middleName' => $middleName,
+                    'start' => $docIssueDate,
+                    'end' => $docExpirationDate,
+                    'docNumber' => $docNumber,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }else {
+                DB::table('user_data')->insertGetId([
+                    'firstName' => $firstName,
+                    'lastName' => $lastName,
+                    'middleName' => $middleName,
+                    'start' => $docIssueDate,
+                    'end' => $docExpirationDate,
+                    'docNumber' => $docNumber,
+                    'iin' => $iin,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }
             $data = base64_decode($image);
-            Storage::put(public_path('/images/'.$iin.'.png'), $data);
+            Storage::put(public_path('/images/' . $iin . '.png'), $data);
 
             $result['success'] = true;
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 }
