@@ -125,6 +125,8 @@ class BiometriaController extends Controller
             ]);
             $response = $res->getBody()->getContents();
             $t = json_decode($response, true);
+            var_dump($t);
+            die();
             $image = $t['data']['domain']['docPhoto'];
             $firstName = $t['data']['domain']['firstName'];
             $lastName = $t['data']['domain']['lastName'];
