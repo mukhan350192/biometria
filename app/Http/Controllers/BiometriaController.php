@@ -130,7 +130,7 @@ class BiometriaController extends Controller
             $firstName = $t['data']['common']['docOwner']['firstName'];
             $lastName = $t['data']['common']['docOwner']['lastName'];
             $middleName = $t['data']['common']['docOwner']['middleName'];
-            $docIssueDate = $t['data']['domain']['docIssueDate'];
+            $docIssueDate = $t['data']['domain']['docIssuedDate'];
             $docExpirationDate = $t['data']['domain']['docExpirationDate'];
             $docNumber = $t['data']['domain']['docNumber'];
             $user = DB::table('user_data')->where('iin',$iin)->first();
