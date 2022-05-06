@@ -125,14 +125,13 @@ class BiometriaController extends Controller
             ]);
             $response = $res->getBody()->getContents();
             $t = json_decode($response, true);
-            var_dump($t);
-            die();
+
             $image = $t['data']['domain']['docPhoto'];
-            $firstName = $t['data']['domain']['firstName'];
-            $lastName = $t['data']['domain']['lastName'];
-            $middleName = $t['data']['domain']['middleName'];
-            $docIssueDate = $t['data']['domain']['docIssueDate'];
-            $docExpirationDate = $t['data']['domain']['docExpirationDate'];
+            $firstName = $t['data']['common']['firstName'];
+            $lastName = $t['data']['common']['lastName'];
+            $middleName = $t['data']['common']['middleName'];
+            $docIssueDate = $t['data']['common']['docIssueDate'];
+            $docExpirationDate = $t['data']['common']['docExpirationDate'];
             $docNumber = $t['data']['domain']['docNumber'];
             $user = DB::table('user_data')->where('iin',$iin)->first();
             if ($user){
