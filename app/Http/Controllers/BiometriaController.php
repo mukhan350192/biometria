@@ -133,25 +133,25 @@ class BiometriaController extends Controller
             $docIssueDate = $t['data']['domain']['docIssuedDate'];
             $docExpirationDate = $t['data']['domain']['docExpirationDate'];
             $docNumber = $t['data']['domain']['docNumber'];
-            $user = DB::table('user_data')->where('iin',$iin)->first();
-            if ($user){
-                DB::table('user_data')->where('iin',$iin)->update([
+            $user = DB::table('user_data')->where('iin', $iin)->first();
+            if ($user) {
+                DB::table('user_data')->where('iin', $iin)->update([
                     'firstName' => $firstName,
                     'lastName' => $lastName,
                     'middleName' => $middleName,
-                    'start' => date('Y-m-d',$docIssueDate/1000),
-                    'end' => date('Y-m-d',$docExpirationDate/1000),
+                    'start' => date('Y-m-d', $docIssueDate / 1000),
+                    'end' => date('Y-m-d', $docExpirationDate / 1000),
                     'docNumber' => $docNumber,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
-            }else {
+            } else {
                 DB::table('user_data')->insertGetId([
                     'firstName' => $firstName,
                     'lastName' => $lastName,
                     'middleName' => $middleName,
-                    'start' => date('Y-m-d',$docIssueDate/1000),
-                    'end' => date('Y-m-d',$docExpirationDate/1000),
+                    'start' => date('Y-m-d', $docIssueDate / 1000),
+                    'end' => date('Y-m-d', $docExpirationDate / 1000),
                     'docNumber' => $docNumber,
                     'iin' => $iin,
                     'created_at' => Carbon::now(),
@@ -159,7 +159,7 @@ class BiometriaController extends Controller
                 ]);
             }
             $data = base64_decode($image);
-            Storage::put(public_path('/images/' . $iin . '.png'), $data);
+            Storage::put($iin . '.png', $data);
 
             $result['success'] = true;
         } while (false);
