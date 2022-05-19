@@ -175,6 +175,10 @@ class BiometriaController extends Controller
                 $result['message'] = 'Не передан фото';
                 break;
             }
+            if (!$iin){
+                $result['message'] = 'Не передан иин';
+                break;
+            }
             $fileName = $photo->getClientOriginalName();
             $extension = $photo->getClientOriginalExtension();
             $url = 'http://178.170.221.75/biometria/storage/app/'.$iin.'.png';
