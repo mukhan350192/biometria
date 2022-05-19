@@ -165,4 +165,54 @@ class BiometriaController extends Controller
         } while (false);
         return response()->json($result);
     }
+
+    public function comparePhotos(Request $request){
+        $photo = $request->file('photo');
+        $iin = $request->input('iin');
+        $result['success'] = false;
+        do{
+            if (!$photo){
+                $result['message'] = 'Не передан фото';
+                break;
+            }
+            $fileName = $photo->getClientOriginalName();
+            $extension = $photo->getClientOriginalExtension();
+            $url = 'http://178.170.221.75/biometria/storage/app/'.$iin.'.png';
+            $photo2 = file_get_contents($url);
+            $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
+            $xml = "
+<Envelope xmlns='http://schemas.xmlsoap.org/soap/envelope/'>
+    <Body>
+        <ComparePhoto2>
+            <UserName>7471656497</UserName>
+            <Password>970908350192</Password>
+            <photoBody1>base64_encode($photo)</photoBody1>
+            <filename1>$fileName</filename1>
+            <format1>$extension</format1>
+            <os1>UNKNOWN</os1>
+            <photoBody2>base64_encode($photo2)</photoBody2>
+            <filename2>$iin.'.png'</filename2>
+            <format2>image/png</format2>
+            <os2>UNKNOWN</os2>
+        </ComparePhoto2>
+    </Body>
+</Envelope>
+";
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'text/xml; charset=UTF8'
+                ],
+                'body' => $xml
+            ];
+
+            $client = new Client(['verify'=>false]);
+
+            $response = $client->request('POST', $url, $options);
+            var_dump($response->getBody());
+
+
+        }while (false);
+
+        return response()->json($result);
+    }
 }
