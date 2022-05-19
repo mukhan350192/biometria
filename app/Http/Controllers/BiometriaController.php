@@ -211,7 +211,7 @@ class BiometriaController extends Controller
 
             $client = new Client(['verify'=>false]);
 
-            $response = $client->request('POST', $url, $options);
+            $response = $client->request('POST', $mainUrl, $options);
             var_dump($response->getBody());
 
 
