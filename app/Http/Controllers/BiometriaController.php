@@ -185,8 +185,7 @@ class BiometriaController extends Controller
             $photo2 = file_get_contents($url);
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
-<Envelope xmlns='http://schemas.xmlsoap.org/soap/envelope/'>
-    <Body>
+<?xml version='1.0' encoding='UTF-8'?>
         <ComparePhoto2>
             <UserName>7471656497</UserName>
             <Password>970908350192</Password>
@@ -199,18 +198,16 @@ class BiometriaController extends Controller
             <format2>image/png</format2>
             <os2>UNKNOWN</os2>
         </ComparePhoto2>
-    </Body>
-</Envelope>
 ";
             $options = [
                 'headers' => [
-                    'Content-Type' => 'text/xml; charset=UTF8'
+                    'Content-Type' => 'text/xml'
                 ],
                 'body' => $xml
             ];
 
             $client = new Client(['verify'=>false]);
-
+            print_r($xml);
             $response = $client->request('POST', $mainUrl, $options);
             var_dump($response->getBody());
 
