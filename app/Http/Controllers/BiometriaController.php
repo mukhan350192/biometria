@@ -183,6 +183,7 @@ class BiometriaController extends Controller
             $extension = $photo->getClientOriginalExtension();
             $url = 'http://178.170.221.75/biometria/storage/app/'.$iin.'.png';
             $photo2 = file_get_contents($url);
+            $photo2 = base64_encode($photo2);
             $photo = base64_encode($photo);
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
@@ -194,7 +195,7 @@ class BiometriaController extends Controller
             <filename1>$fileName</filename1>
             <format1>$extension</format1>
             <os1>UNKNOWN</os1>
-            <photoBody2>base64_encode($photo2)</photoBody2>
+            <photoBody2>$photo2</photoBody2>
             <filename2>$iin.'.png'</filename2>
             <format2>image/png</format2>
             <os2>UNKNOWN</os2>
