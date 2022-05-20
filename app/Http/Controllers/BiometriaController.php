@@ -187,6 +187,37 @@ class BiometriaController extends Controller
             $photo = base64_encode(file_get_contents($photo->path()));
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
+         <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
+ <soapenv:Header>
+   <ws:CigWsHeader
+    xmlns=''
+    xmlns:ns3='http://ws.creditinfo.com/'>
+    <ws:Culture>ru-RU</ws:Culture>
+    <ws:Password>970908350192</ws:Password>
+    <ws:UserName>7471656497</ws:UserName>
+    <ws:Version>2</ws:Version>
+    </ws:CigWsHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ws:ComparePhoto2>
+         <ws:photoBody1>
+         $photo
+         </ws:photoBody1>
+         <ws:filename1>$fileName</ws:filename1>
+         <ws:format1>$extension</ws:format1>
+         <ws:os1>DESKTOP</ws:os1>
+         <ws:photoBody2>
+         $photo2
+         </ws:photoBody2>
+         <ws:filename2>$iin.png</ws:filename2>
+         <ws:format2>image/png</ws:format2>
+           <ws:os2>DESKTOP</ws:os2>
+      </ws:ComparePhoto2>
+   </soapenv:Body>
+</soapenv:Envelope>
+         ";
+/*
+            $xml = "
 <?xml version='1.0' encoding='UTF-8'?>
         <ComparePhoto2>
             <UserName>7471656497</UserName>
@@ -201,6 +232,7 @@ class BiometriaController extends Controller
             <os2>UNKNOWN</os2>
         </ComparePhoto2>
 ";
+*/
             $options = [
                 'headers' => [
                     'Content-Type' => 'text/xml'
