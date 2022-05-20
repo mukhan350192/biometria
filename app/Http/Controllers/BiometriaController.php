@@ -204,7 +204,7 @@ class BiometriaController extends Controller
          $photo
          </ws:photoBody1>
          <ws:filename1>$fileName</ws:filename1>
-         <ws:format1>$extension</ws:format1>
+         <ws:format1>image/$extension</ws:format1>
          <ws:os1>DESKTOP</ws:os1>
          <ws:photoBody2>
          $photo2
