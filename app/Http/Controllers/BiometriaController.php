@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use SimpleXMLElement;
 
 class BiometriaController extends Controller
 {
@@ -228,7 +229,8 @@ class BiometriaController extends Controller
             $response = $client->request('POST', $mainUrl, $options);
             $response = $response->getBody()->getContents();
             print_r($response);
-            $xml = simplexml_load_file($response,"SimpleXMLElement", LIBXML_NOCDATA);
+            $xml = new SimpleXMLElement($response);
+            $xml = simplexml_load_file($xml,"SimpleXMLElement", LIBXML_NOCDATA);
             print_r($xml);
             $xml = json_encode($xml);
             $res = json_decode($xml, true);
