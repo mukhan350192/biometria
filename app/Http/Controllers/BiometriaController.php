@@ -171,28 +171,29 @@ class BiometriaController extends Controller
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Exception
      */
-    public function comparePhotos(Request $request){
+    public function comparePhotos(Request $request)
+    {
         $photo = $request->file('photo');
         $iin = $request->input('iin');
         $leadID = $request->input('leadID');
         $result['success'] = false;
-        do{
-            if (!$photo){
+        do {
+            if (!$photo) {
                 $result['message'] = 'Не передан фото';
                 break;
             }
-            if (!$iin){
+            if (!$iin) {
                 $result['message'] = 'Не передан иин';
                 break;
             }
-            if (!$leadID){
+            if (!$leadID) {
                 $result['message'] = 'Не передан лид';
                 break;
             }
 
             $fileName = $photo->getClientOriginalName();
             $extension = $photo->getClientOriginalExtension();
-            $url = 'http://178.170.221.75/biometria/storage/app/'.$iin.'.png';
+            $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
             $photo2 = file_get_contents($url);
             $photo2 = base64_encode($photo2);
             $photo = base64_encode(file_get_contents($photo->path()));
@@ -235,22 +236,22 @@ class BiometriaController extends Controller
                 'body' => $xml
             ];
 
-            $client = new Client(['verify'=>false]);
+            $client = new Client(['verify' => false]);
             $response = $client->request('POST', $mainUrl, $options);
             $response = $response->getBody()->getContents();
             $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
             $xml = new SimpleXMLElement($output);
 
-            $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity*100;
+            $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
             $file = $request->file('photo');
-            $s = Storage::put('selfie',$file);
+            $s = Storage::put('selfie', $file);
             DB::table('photo_data')->insertGetId([
-               'iin' => $iin,
-               'leadID' => $leadID,
-               'selfie' => $s,
-               'created_at' => Carbon::now(),
-               'updated_at' => Carbon::now(),
+                'iin' => $iin,
+                'leadID' => $leadID,
+                'selfie' => $s,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
             $url = "https://ic24.almait.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$s";
 
@@ -261,37 +262,42 @@ class BiometriaController extends Controller
             $result['similarity'] = $similarity;
 
 
-        }while (false);
+        } while (false);
 
         return response()->json($result);
     }
 
-    public function upload(Request $request){
+    public function upload(Request $request)
+    {
         $photo = $request->file('photo');
         $fileName = $photo->getClientOriginalName();
         $extension = $photo->getClientOriginalExtension();
-        $name = sha1($fileName).".".$extension;
-        $s = Storage::put('selfie',$photo);
+        $name = sha1($fileName) . "." . $extension;
+        $s = Storage::put('selfie', $photo);
 
         var_dump($s);
     }
 
-    public function standard(Request $request){
+    public function standard(Request $request)
+    {
 
         $url = "https://secure2.1cb.kz/susn-status/api/v1/login";
         $username = 7471656497;
         $password = 970908350192;
         $result['success'] = false;
-        do{
+        do {
             $http = new Client(['verify' => false]);
             $response = $http->get($url, [
-                'auth' => [
-                    $username,
-                    $password,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'auth' => [
+                        $username,
+                        $password,
+                    ],
                 ],
             ]);
             var_dump($response->getBody()->getContents());
-        }while(false);
+        } while (false);
         return response()->json($result);
     }
 }
