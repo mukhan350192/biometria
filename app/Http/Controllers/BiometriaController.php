@@ -280,12 +280,20 @@ class BiometriaController extends Controller
 
     public function standard(Request $request)
     {
-
+        $iin = $request->input('iin');
         $url = "https://secure2.1cb.kz/susn-status/api/v1/login";
         $username = 7471656497;
         $password = 970908350192;
         $result['success'] = false;
         do {
+            if (!$iin){
+                $result['message'] = 'Не передан параметры';
+                break;
+            }
+            if (strlen($iin) != 12){
+                $result['message'] = 'Длина ИИН должен быть 12';
+                break;
+            }
             $http = new Client(['verify' => false]);
             $response = $http->get($url, [
                 'headers' => [
@@ -296,7 +304,20 @@ class BiometriaController extends Controller
                 ]);
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
-            print_r($response['access']['hash']);
+            $hash = $response['access']['hash'];
+
+            $url = "https://secure2.1cb.kz/susn-status/api/v1/subject/$iin";
+            $headers = [
+                'Authorization' => 'Bearer ' . $hash,
+                'Content-Type' => 'application/json',
+                'Consent-Confirmed' => 1,
+            ];
+
+            $res = $http->post($url, [
+                'headers' => $headers,
+            ]);
+            $res = $res->getBody()->getContents();
+            print_r($res);
         } while (false);
         return response()->json($result);
     }
