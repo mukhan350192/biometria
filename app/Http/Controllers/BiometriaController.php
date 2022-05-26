@@ -237,7 +237,6 @@ class BiometriaController extends Controller
 
             //$xml = new SimpleXMLElement($response);
             //print_r($xml);
-            $xml = simplexml_load_string($xml);
             print_r($xml);
             /*
             $xml = simplexml_load_file($xml,"SimpleXMLElement", LIBXML_NOCDATA);
