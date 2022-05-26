@@ -227,9 +227,11 @@ class BiometriaController extends Controller
             $client = new Client(['verify'=>false]);
             $response = $client->request('POST', $mainUrl, $options);
             $response = $response->getBody()->getContents();
-            print_r($response);
 
-
+            $xml = simplexml_load_file($response);
+            $xml = json_encode($xml);
+            $res = json_decode($xml, true);
+            print_r($res);
         }while (false);
 
         return response()->json($result);
