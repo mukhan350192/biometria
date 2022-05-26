@@ -167,6 +167,10 @@ class BiometriaController extends Controller
         return response()->json($result);
     }
 
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
+     */
     public function comparePhotos(Request $request){
         $photo = $request->file('photo');
         $iin = $request->input('iin');
@@ -228,14 +232,12 @@ class BiometriaController extends Controller
             $client = new Client(['verify'=>false]);
             $response = $client->request('POST', $mainUrl, $options);
             $response = $response->getBody()->getContents();
-            $response = <<<XML
-        $response
-XML;
-
+            $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
+            $xml = new SimpleXMLElement($output);
 
             //$xml = new SimpleXMLElement($response);
             //print_r($xml);
-            $xml = simplexml_load_string($response);
+            $xml = simplexml_load_string($xml);
             print_r($xml);
             /*
             $xml = simplexml_load_file($xml,"SimpleXMLElement", LIBXML_NOCDATA);
