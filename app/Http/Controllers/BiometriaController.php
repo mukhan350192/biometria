@@ -244,8 +244,7 @@ class BiometriaController extends Controller
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity*100;
 
             $file = $request->file('photo');
-            $s = sha1($fileName);
-            Storage::put($s,$file);
+            $s = Storage::put('selfie',$file);
             DB::table('photo_data')->insertGetId([
                'iin' => $iin,
                'leadID' => $leadID,
@@ -265,5 +264,15 @@ class BiometriaController extends Controller
         }while (false);
 
         return response()->json($result);
+    }
+
+    public function upload(Request $request){
+        $photo = $request->file('photo');
+        $fileName = $photo->getClientOriginalName();
+        $extension = $photo->getClientOriginalExtension();
+        $name = sha1($fileName).".".$extension;
+        $s = Storage::put('selfie',$photo);
+
+        var_dump($s);
     }
 }
