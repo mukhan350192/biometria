@@ -305,7 +305,7 @@ class BiometriaController extends Controller
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             $hash = $response['access']['hash'];
-
+            var_dump($hash);
             $url = "https://secure2.1cb.kz/susn-status/api/v1/subject/$iin";
             $headers = [
                 'Authorization' => 'Bearer ' . $hash,
