@@ -277,7 +277,8 @@ class BiometriaController extends Controller
     }
 
     public function standard(Request $request){
-        $url = "https://secure2.1cb.kz/susn_status/api/v1/login";
+
+        $url = "https://secure2.1cb.kz/susn-status/api/v1/login";
         $username = 7471656497;
         $password = 970908350192;
         $result['success'] = false;
