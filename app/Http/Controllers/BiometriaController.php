@@ -245,7 +245,7 @@ class BiometriaController extends Controller
 
             $selfieName = "selfie_".$iin.".".$extension;
             $file = $request->file('photo');
-            Storage::put($selfieName,$file);
+            Storage::put("selfie_".$iin.".".$extension,$file);
             DB::table('photo_data')->insertGetId([
                'iin' => $iin,
                'leadID' => $leadID,
