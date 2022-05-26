@@ -237,7 +237,9 @@ class BiometriaController extends Controller
 
             //$xml = new SimpleXMLElement($response);
             //print_r($xml);
-            print_r($xml);
+            $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity*100;
+            $result['success'] = true;
+            $result['similarity'] = $similarity;
             /*
             $xml = simplexml_load_file($xml,"SimpleXMLElement", LIBXML_NOCDATA);
             print_r($xml);
