@@ -313,7 +313,7 @@ class BiometriaController extends Controller
                 'Consent-Confirmed' => 1,
             ];
 
-            $res = $http->post($url, [
+            $res = $http->get($url, [
                 'headers' => $headers,
             ]);
             $res = $res->getBody()->getContents();
