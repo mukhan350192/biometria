@@ -296,7 +296,7 @@ class BiometriaController extends Controller
                 ]);
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
-            echo $response['access'];
+            echo $response['access']['hash'];
         } while (false);
         return response()->json($result);
     }
