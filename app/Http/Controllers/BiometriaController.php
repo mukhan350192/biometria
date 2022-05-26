@@ -228,6 +228,9 @@ class BiometriaController extends Controller
             $client = new Client(['verify'=>false]);
             $response = $client->request('POST', $mainUrl, $options);
             $response = $response->getBody()->getContents();
+            $response = <<<XML
+        $response
+XML;
 
 
             //$xml = new SimpleXMLElement($response);
