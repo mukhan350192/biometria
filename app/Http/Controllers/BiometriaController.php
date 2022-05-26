@@ -216,23 +216,7 @@ class BiometriaController extends Controller
    </soapenv:Body>
 </soapenv:Envelope>
          ";
-/*
-            $xml = "
-<?xml version='1.0' encoding='UTF-8'?>
-        <ComparePhoto2>
-            <UserName>7471656497</UserName>
-            <Password>970908350192</Password>
-            <photoBody1>$photo</photoBody1>
-            <filename1>$fileName</filename1>
-            <format1>$extension</format1>
-            <os1>UNKNOWN</os1>
-            <photoBody2>$photo2</photoBody2>
-            <filename2>$iin.png</filename2>
-            <format2>image/png</format2>
-            <os2>UNKNOWN</os2>
-        </ComparePhoto2>
-";
-*/
+
             $options = [
                 'headers' => [
                     'Content-Type' => 'text/xml'
@@ -241,9 +225,9 @@ class BiometriaController extends Controller
             ];
 
             $client = new Client(['verify'=>false]);
-            print_r($xml);
             $response = $client->request('POST', $mainUrl, $options);
-            var_dump($response->getBody()->getContents());
+            $response = $response->getBody()->getContents();
+            print_r($response);
 
 
         }while (false);
