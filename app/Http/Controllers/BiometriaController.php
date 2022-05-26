@@ -229,7 +229,9 @@ class BiometriaController extends Controller
             $response = $client->request('POST', $mainUrl, $options);
             $response = $response->getBody()->getContents();
             var_dump($response);
-            $xml = new SimpleXMLElement($response);
+            //$xml = new SimpleXMLElement($response);
+            //print_r($xml);
+            $xml = simplexml_load_string($xml);
             print_r($xml);
             /*
             $xml = simplexml_load_file($xml,"SimpleXMLElement", LIBXML_NOCDATA);
