@@ -275,4 +275,22 @@ class BiometriaController extends Controller
 
         var_dump($s);
     }
+
+    public function standard(Request $request){
+        $url = "http://secure2.1cb.kz/susn_status/api/v1/login";
+        $username = 7471656497;
+        $password = 970908350192;
+        $result['success'] = false;
+        do{
+            $http = new Client(['verify' => false]);
+            $response = $http->get($url, [
+                'auth' => [
+                    $username,
+                    $password,
+                ],
+            ]);
+            var_dump($response->getBody()->getContents());
+        }while(false);
+        return response()->json($result);
+    }
 }
