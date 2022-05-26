@@ -23,3 +23,5 @@ Route::get('/takeDocs',[BiometriaController::class,'takeDocs']);
 Route::get('/test',[BiometriaController::class,'test']);
 Route::post('/comparePhotos',[BiometriaController::class,'comparePhotos']);
 Route::post('/upload',[BiometriaController::class,'upload']);
+Route::post('/upload',[BiometriaController::class,'upload']);
+Route::post('/standard',[BiometriaController::class,'standard']);
