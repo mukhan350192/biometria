@@ -243,8 +243,9 @@ class BiometriaController extends Controller
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity*100;
 
-            $selfieName = $iin."_".$leadID.".".$extension;
-            Storage::put($selfieName,base64_decode($request->file('photo')));
+            $selfieName = "selfie_".$iin.".".$extension;
+            $file = $request->file('photo');
+            Storage::put($selfieName,$file);
             DB::table('photo_data')->insertGetId([
                'iin' => $iin,
                'leadID' => $leadID,
