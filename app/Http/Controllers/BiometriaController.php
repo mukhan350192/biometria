@@ -248,7 +248,7 @@ class BiometriaController extends Controller
             DB::table('photo_data')->insertGetId([
                'iin' => $iin,
                'leadID' => $leadID,
-               'photo' => $selfieName,
+               'selfie' => $selfieName,
                'created_at' => Carbon::now(),
                'updated_at' => Carbon::now(),
             ]);
