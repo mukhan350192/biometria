@@ -256,7 +256,7 @@ class BiometriaController extends Controller
 
             $client = new Client(['verify' => false]);
             $s = $client->get($url);
-            print_r($s);
+            print_r($s->getBody()->getContents());
             $result['success'] = true;
             $result['similarity'] = $similarity;
 
