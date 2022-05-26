@@ -289,13 +289,11 @@ class BiometriaController extends Controller
             $http = new Client(['verify' => false]);
             $response = $http->get($url, [
                 'headers' => [
+                    'Authorization' => 'Basic ' . base64_encode('7471656497:970908350192'),
                     'Content-Type' => 'application/json',
-                    'auth' => [
-                        $username,
-                        $password,
-                    ],
+                    'Accept' => 'application/json',
                 ],
-            ]);
+                ]);
             var_dump($response->getBody()->getContents());
         } while (false);
         return response()->json($result);
