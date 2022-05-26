@@ -174,6 +174,7 @@ class BiometriaController extends Controller
     public function comparePhotos(Request $request){
         $photo = $request->file('photo');
         $iin = $request->input('iin');
+        $leadID = $request->input('leadID');
         $result['success'] = false;
         do{
             if (!$photo){
@@ -184,6 +185,11 @@ class BiometriaController extends Controller
                 $result['message'] = 'Не передан иин';
                 break;
             }
+            if (!$leadID){
+                $result['message'] = 'Не передан лид';
+                break;
+            }
+
             $fileName = $photo->getClientOriginalName();
             $extension = $photo->getClientOriginalExtension();
             $url = 'http://178.170.221.75/biometria/storage/app/'.$iin.'.png';
@@ -235,18 +241,26 @@ class BiometriaController extends Controller
             $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
             $xml = new SimpleXMLElement($output);
 
-            //$xml = new SimpleXMLElement($response);
-            //print_r($xml);
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity*100;
+
+            $selfieName = $iin."_".$leadID.".".$extension;
+            Storage::put($selfieName,$photo);
+            DB::table('photo_data')->insertGetId([
+               'iin' => $iin,
+               'leadID' => $leadID,
+               'photo' => $selfieName,
+               'created_at' => Carbon::now(),
+               'updated_at' => Carbon::now(),
+            ]);
+            $url = "https://ic24.almait.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$selfieName";
+
+            $client = new Client(['verify' => false]);
+            $s = $client->get($url);
+            print_r($s);
             $result['success'] = true;
             $result['similarity'] = $similarity;
-            /*
-            $xml = simplexml_load_file($xml,"SimpleXMLElement", LIBXML_NOCDATA);
-            print_r($xml);
-            $xml = json_encode($xml);
-            $res = json_decode($xml, true);
-            print_r($res);
-            */
+
+
         }while (false);
 
         return response()->json($result);
