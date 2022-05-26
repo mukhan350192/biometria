@@ -294,7 +294,9 @@ class BiometriaController extends Controller
                     'Accept' => 'application/json',
                 ],
                 ]);
-            var_dump($response->getBody()->getContents());
+            $response = $response->getBody()->getContents();
+            $response = json_decode($response, true);
+            echo $response['access'];
         } while (false);
         return response()->json($result);
     }
