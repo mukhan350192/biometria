@@ -348,9 +348,6 @@ creditinfo.com/'>
          ";
 
         $options = [
-            'headers' => [
-                'Content-Type' => 'text/xml'
-            ],
             'body' => $xml
         ];
 
