@@ -278,7 +278,7 @@ class BiometriaController extends Controller
         var_dump($s);
     }
 
-    public function standard(Request $request)
+    public function susn(Request $request)
     {
         $iin = $request->input('iin');
         $url = "https://secure2.1cb.kz/susn-status/api/v1/login";
@@ -286,11 +286,11 @@ class BiometriaController extends Controller
         $password = 970908350192;
         $result['success'] = false;
         do {
-            if (!$iin){
+            if (!$iin) {
                 $result['message'] = 'Не передан параметры';
                 break;
             }
-            if (strlen($iin) != 12){
+            if (strlen($iin) != 12) {
                 $result['message'] = 'Длина ИИН должен быть 12';
                 break;
             }
@@ -301,7 +301,7 @@ class BiometriaController extends Controller
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ],
-                ]);
+            ]);
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             $hash = $response['access']['hash'];
@@ -323,5 +323,40 @@ class BiometriaController extends Controller
             print_r($res);
         } while (false);
         return response()->json($result);
+    }
+
+    public function standard()
+    {
+        $mainUrl = 'https://secure2.1cb.kz/backoffice';
+        $xml = "
+         <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.
+creditinfo.com/'>
+<soapenv:Header>
+    <ws:CigWsHeader>
+        <ws:Culture></ws:Culture>
+        <ws:Password>970908350192</ws:Password>
+        <ws:SecurityToken></ws:SecurityToken>
+        <ws:UserId></ws:UserId>
+        <ws:UserName>7471656497</ws:UserName>
+        <ws:Version></ws:Version>
+    </ws:CigWsHeader>
+</soapenv:Header>
+<soapenv:Body>
+<ws:GetAvailableReports/>
+</soapenv:Body>
+</soapenv:Envelope>
+         ";
+
+        $options = [
+            'headers' => [
+                'Content-Type' => 'text/xml'
+            ],
+            'body' => $xml
+        ];
+
+        $client = new Client(['verify' => false]);
+        $response = $client->request('POST', $mainUrl, $options);
+        $response = $response->getBody()->getContents();
+        print_r($response);
     }
 }
