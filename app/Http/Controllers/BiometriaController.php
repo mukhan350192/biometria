@@ -173,7 +173,7 @@ class BiometriaController extends Controller
      */
     public function comparePhotos(Request $request)
     {
-        $photo = $request->file('photo');
+        $photo = $request->input('photo');
         $iin = $request->input('iin');
         $leadID = $request->input('leadID');
         $result['success'] = false;
@@ -196,7 +196,7 @@ class BiometriaController extends Controller
             $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
             $photo2 = file_get_contents($url);
             $photo2 = base64_encode($photo2);
-            $photo = base64_encode(file_get_contents($photo->path()));
+            //$photo = base64_encode(file_get_contents($photo->path()));
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
          <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
@@ -329,22 +329,21 @@ class BiometriaController extends Controller
     {
         $mainUrl = 'https://secure2.1cb.kz/backoffice';
         $xml = "
-         <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.
-creditinfo.com/'>
-<soapenv:Header>
-    <ws:CigWsHeader>
-        <ws:Culture></ws:Culture>
-        <ws:Password>970908350192</ws:Password>
-        <ws:SecurityToken></ws:SecurityToken>
-        <ws:UserId></ws:UserId>
-        <ws:UserName>7471656497</ws:UserName>
-        <ws:Version></ws:Version>
-    </ws:CigWsHeader>
-</soapenv:Header>
-<soapenv:Body>
-<ws:GetAvailableReports/>
-</soapenv:Body>
-</soapenv:Envelope>
+         <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
+            <soapenv:Header>
+                <ws:CigWsHeader>
+                    <ws:Culture></ws:Culture>
+                    <ws:Password>970908350192</ws:Password>
+                    <ws:SecurityToken></ws:SecurityToken>
+                    <ws:UserId></ws:UserId>
+                    <ws:UserName>7471656497</ws:UserName>
+                    <ws:Version></ws:Version>
+                </ws:CigWsHeader>
+            </soapenv:Header>
+            <soapenv:Body>
+                <ws:GetAvailableReports/>
+            </soapenv:Body>
+        </soapenv:Envelope>
          ";
 
         $options = [
