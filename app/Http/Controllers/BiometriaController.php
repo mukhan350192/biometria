@@ -176,6 +176,8 @@ class BiometriaController extends Controller
         $photo = $request->input('photo');
         $iin = $request->input('iin');
         $leadID = $request->input('leadID');
+        $fileName = $request->input('fileName');
+        $extension = $request->input('extension');
         $result['success'] = false;
         do {
             if (!$photo) {
@@ -191,8 +193,8 @@ class BiometriaController extends Controller
                 break;
             }
 
-            $fileName = $photo->getClientOriginalName();
-            $extension = $photo->getClientOriginalExtension();
+           // $fileName = $photo->getClientOriginalName();
+           // $extension = $photo->getClientOriginalExtension();
             $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
             $photo2 = file_get_contents($url);
             $photo2 = base64_encode($photo2);
