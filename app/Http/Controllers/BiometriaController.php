@@ -255,7 +255,7 @@ class BiometriaController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            $url = "https://ic24.almait.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie='test'";
+            $url = "https://ic24.almait.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=test";
 
             $client = new Client(['verify' => false]);
             $s = $client->get($url);
