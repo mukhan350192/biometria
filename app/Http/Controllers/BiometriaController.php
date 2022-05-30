@@ -173,7 +173,7 @@ class BiometriaController extends Controller
      */
     public function comparePhotos(Request $request)
     {
-        $photo = $request->input('photo');
+        $photo = $request->file('photo');
         $iin = $request->input('iin');
         $leadID = $request->input('leadID');
         $fileName = $request->input('fileName');
@@ -193,12 +193,12 @@ class BiometriaController extends Controller
                 break;
             }
 
-           // $fileName = $photo->getClientOriginalName();
-           // $extension = $photo->getClientOriginalExtension();
+            // $fileName = $photo->getClientOriginalName();
+            // $extension = $photo->getClientOriginalExtension();
             $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
             $photo2 = file_get_contents($url);
             $photo2 = base64_encode($photo2);
-            //$photo = base64_encode(file_get_contents($photo->path()));
+            $photo = base64_encode(file_get_contents($photo->path()));
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
          <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
@@ -246,12 +246,9 @@ class BiometriaController extends Controller
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
-            $file = base64_decode($photo,true);
-            echo "<img src='$file'>";
 
-            print_r($file);
-        //    $file = $request->file('photo');
-            $s = Storage::put('selfie', $photo);
+            $file = $request->file('photo');
+            $s = Storage::put('selfie', $file);
             DB::table('photo_data')->insertGetId([
                 'iin' => $iin,
                 'leadID' => $leadID,
