@@ -246,7 +246,7 @@ class BiometriaController extends Controller
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
-            $file = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $photo));
+            $file = base64_decode(preg_replace("#^data:image/\w+;base64,#i", '', $photo));
 
             //print_r($file);
         //    $file = $request->file('photo');
