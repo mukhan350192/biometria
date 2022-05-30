@@ -249,7 +249,7 @@ class BiometriaController extends Controller
             $data = explode( ',', $photo);
             $file = base64_decode($data[1]);
 
-            //print_r($file);
+            print_r($file);
         //    $file = $request->file('photo');
             $s = Storage::put('selfie', $file);
             DB::table('photo_data')->insertGetId([
