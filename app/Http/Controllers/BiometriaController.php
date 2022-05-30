@@ -245,8 +245,10 @@ class BiometriaController extends Controller
             $xml = new SimpleXMLElement($output);
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
-            $file = base64_decode($photo);
-            print_r($file);
+
+            $file = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $photo));
+
+            //print_r($file);
         //    $file = $request->file('photo');
             $s = Storage::put('selfie', $file);
             DB::table('photo_data')->insertGetId([
