@@ -246,16 +246,16 @@ class BiometriaController extends Controller
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
-            $file = $request->file('photo');
-            $s = Storage::put('selfie', $file);
+        //    $file = $request->file('photo');
+          //  $s = Storage::put('selfie', $file);
             DB::table('photo_data')->insertGetId([
                 'iin' => $iin,
                 'leadID' => $leadID,
-                'selfie' => $s,
+                'selfie' => 'test',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            $url = "https://ic24.almait.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$s";
+            $url = "https://ic24.almait.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie='test'";
 
             $client = new Client(['verify' => false]);
             $s = $client->get($url);
