@@ -246,8 +246,21 @@ class BiometriaController extends Controller
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
-            $data = explode( ',', $photo);
-            $file = base64_decode($data[1]);
+            $image_64 = $photo; //your base64 encoded data
+
+            $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
+
+            $replace = substr($image_64, 0, strpos($image_64, ',')+1);
+
+// find substring fro replace here eg: data:image/png;base64,
+
+            $image = str_replace($replace, '', $image_64);
+
+            $image = str_replace(' ', '+', $image);
+
+            $imageName = Str::random(10).'.'.$extension;
+            $file = base64_decode($image);
+
 
             print_r($file);
         //    $file = $request->file('photo');
