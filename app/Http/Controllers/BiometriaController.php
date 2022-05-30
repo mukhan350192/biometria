@@ -246,6 +246,7 @@ class BiometriaController extends Controller
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
             $file = base64_decode($photo);
+            print_r($file);
         //    $file = $request->file('photo');
             $s = Storage::put('selfie', $file);
             DB::table('photo_data')->insertGetId([
