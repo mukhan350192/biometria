@@ -62,6 +62,7 @@ class BiometriaController extends Controller
             ]);
             $status = $res->getStatusCode();
             $response = $res->getBody()->getContents();
+            print_r($response);
             $response = json_decode($response, true);
 
             if ($status == 200 && $response['responseCode'] == 'PROFILE_DOCUMENT_ACCESS_SUCCESS') {
