@@ -62,16 +62,16 @@ class BiometriaController extends Controller
                 'body' => json_encode($body),
             ]);
             $status = $res->getStatusCode();
-            var_dump($status);
             $response = $res->getBody()->getContents();
             $response = json_decode($response, true);
-            var_dump($response);
-            /*
             if (isset($response['errorCode']) && $response['errorCode'] == 404){
-                $result['code'] = 1;
-                $result['success'] = true;
+                $result['message'] = 'Не найден в БМГ';
+                break;
             }
-
+            if (isset($status) && $status == 500){
+                $result['message'] = 'Не найден в БМГ';
+                break;
+            }
             if ($status == 200 && $response['responseCode'] == 'PROFILE_DOCUMENT_ACCESS_SUCCESS') {
                 $result['success'] = true;
                 break;
@@ -81,7 +81,7 @@ class BiometriaController extends Controller
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
-            */
+
         } while (false);
         return response()->json($result);
     }
