@@ -61,6 +61,7 @@ class BiometriaController extends Controller
                 'body' => json_encode($body),
             ]);
             $status = $res->getStatusCode();
+            print_r($status);
             $response = $res->getBody()->getContents();
             print_r($response);
             $response = json_decode($response, true);
