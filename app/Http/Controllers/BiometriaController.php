@@ -61,14 +61,11 @@ class BiometriaController extends Controller
                 'headers' => $headers,
                 'body' => json_encode($body),
             ]);
-        /*    $status = $res->getStatusCode();
-            if ($status == 404){
-                $result['status'] = $status;
-            }
-            print_r($status);*/
+            $status = $res->getStatusCode();
+            var_dump($status);
             $response = $res->getBody()->getContents();
             $response = json_decode($response, true);
-            print_r($response);
+            var_dump($response);
             /*
             if (isset($response['errorCode']) && $response['errorCode'] == 404){
                 $result['code'] = 1;
