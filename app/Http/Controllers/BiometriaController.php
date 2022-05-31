@@ -66,6 +66,7 @@ class BiometriaController extends Controller
             $response = $res->getBody()->getContents();
             $response = json_decode($response, true);
             print_r($response);
+            /*
             if (isset($response['errorCode']) && $response['errorCode'] == 404){
                 $result['code'] = 1;
                 $result['success'] = true;
@@ -80,7 +81,7 @@ class BiometriaController extends Controller
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
-
+            */
         } while (false);
         return response()->json($result);
     }
