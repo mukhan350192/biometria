@@ -66,7 +66,7 @@ class BiometriaController extends Controller
             $response = $res->getBody()->getContents();
             $response = json_decode($response, true);
 
-            if ($status == 404){
+            if (isset($response['errorCode']) && $response['errorCode'] == 404){
                 $result['code'] = 1;
                 $result['success'] = true;
             }
