@@ -62,6 +62,7 @@ class BiometriaController extends Controller
             ]);
             $status = $res->getStatusCode();
             print_r($status);
+            /*
             $response = $res->getBody()->getContents();
             print_r($response);
             $response = json_decode($response, true);
@@ -75,6 +76,7 @@ class BiometriaController extends Controller
                 $result['message'] = 'Попробуйте позже';
                 break;
             }
+            */
         } while (false);
         return response()->json($result);
     }
