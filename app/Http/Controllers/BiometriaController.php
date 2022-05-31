@@ -56,13 +56,15 @@ class BiometriaController extends Controller
                 'iin' => $iin,
                 'phone' => $phone,
             ];
+            print_r($headers);
+            print_r($body);
+            /*
             $res = $client->post($url, [
                 'headers' => $headers,
                 'body' => json_encode($body),
             ]);
             $status = $res->getStatusCode();
             print_r($status);
-            /*
             $response = $res->getBody()->getContents();
             print_r($response);
             $response = json_decode($response, true);
