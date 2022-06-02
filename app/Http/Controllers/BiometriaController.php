@@ -121,13 +121,26 @@ class BiometriaController extends Controller
                 'Content-Type' => 'application/json',
                 'Consent-Confirmed' => 1,
             ];
+            $birth = str_split($iin,1);
+            if ($birth[6] == 3){
+                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'19'.$birth[0].$birth[1];
+            }
+            if ($birth[6] == 4){
+                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'19'.$birth[0].$birth[1];
+            }
+            if ($birth[6] == 5){
+                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'20'.$birth[0].$birth[1];
+            }
+            if ($birth[6] == 6){
+                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'20'.$birth[0].$birth[1];
+            }
             $body = [
                 'ciin' => $iin,
                 'code' => $code,
                 'last_name' => $lastName,
                 'first_name' => $name,
                 'middle_name' => $middleName,
-                'birthday' => '08.09.1997',
+                'birthday' => $birthday,
             ];
             $res = $client->post($url, [
                 'headers' => $headers,
@@ -143,6 +156,7 @@ class BiometriaController extends Controller
             $docIssueDate = $t['data']['domain']['docIssuedDate'];
             $docExpirationDate = $t['data']['domain']['docExpirationDate'];
             $docNumber = $t['data']['domain']['docNumber'];
+            $docGiven = $t['data']['domain']['docIssuer']['nameRu'];
             $user = DB::table('user_data')->where('iin', $iin)->first();
             if ($user) {
                 DB::table('user_data')->where('iin', $iin)->update([
@@ -170,6 +184,13 @@ class BiometriaController extends Controller
             }
             $data = base64_decode($image);
             Storage::put($iin . '.png', $data);
+            $result['name'] = $firstName;
+            $result['surname'] = $lastName;
+            $result['fatherName'] = $middleName;
+            $result['docNumber'] = $docNumber;
+            $result['docGiven'] = $docGiven;
+            $result['startGiven'] = $docGiven;
+            $result['endGiven'] = $docIssueDate;
 
             $result['success'] = true;
         } while (false);
