@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -142,60 +143,68 @@ class BiometriaController extends Controller
                 'middle_name' => $middleName,
                 'birthday' => $birthday,
             ];
-            $res = $client->post($url, [
-                'headers' => $headers,
-                'body' => json_encode($body),
-            ]);
-            $status = $res->getStatusCode();
-            print_r($status);
-            $response = $res->getBody()->getContents();
-            $t = json_decode($response, true);
+            try{
+                $res = $client->post($url, [
+                    'headers' => $headers,
+                    'body' => json_encode($body),
+                ]);
 
-            $image = $t['data']['domain']['docPhoto'];
-            $firstName = $t['data']['common']['docOwner']['firstName'];
-            $lastName = $t['data']['common']['docOwner']['lastName'];
-            $middleName = $t['data']['common']['docOwner']['middleName'];
-            $docIssueDate = $t['data']['domain']['docIssuedDate'];
-            $docExpirationDate = $t['data']['domain']['docExpirationDate'];
-            $docNumber = $t['data']['domain']['docNumber'];
-            print_r($t['data']['domain']);
-            $docGiven = $t['data']['domain']['docIssuer'];
-            $user = DB::table('user_data')->where('iin', $iin)->first();
-            if ($user) {
-                DB::table('user_data')->where('iin', $iin)->update([
-                    'firstName' => $firstName,
-                    'lastName' => $lastName,
-                    'middleName' => $middleName,
-                    'start' => date('Y-m-d', $docIssueDate / 1000),
-                    'end' => date('Y-m-d', $docExpirationDate / 1000),
-                    'docNumber' => $docNumber,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ]);
-            } else {
-                DB::table('user_data')->insertGetId([
-                    'firstName' => $firstName,
-                    'lastName' => $lastName,
-                    'middleName' => $middleName,
-                    'start' => date('Y-m-d', $docIssueDate / 1000),
-                    'end' => date('Y-m-d', $docExpirationDate / 1000),
-                    'docNumber' => $docNumber,
-                    'iin' => $iin,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ]);
+                $response = $res->getBody()->getContents();
+                $t = json_decode($response, true);
+
+                $image = $t['data']['domain']['docPhoto'];
+                $firstName = $t['data']['common']['docOwner']['firstName'];
+                $lastName = $t['data']['common']['docOwner']['lastName'];
+                $middleName = $t['data']['common']['docOwner']['middleName'];
+                $docIssueDate = $t['data']['domain']['docIssuedDate'];
+                $docExpirationDate = $t['data']['domain']['docExpirationDate'];
+                $docNumber = $t['data']['domain']['docNumber'];
+                print_r($t['data']['domain']);
+                $docGiven = $t['data']['domain']['docIssuer'];
+                $user = DB::table('user_data')->where('iin', $iin)->first();
+                if ($user) {
+                    DB::table('user_data')->where('iin', $iin)->update([
+                        'firstName' => $firstName,
+                        'lastName' => $lastName,
+                        'middleName' => $middleName,
+                        'start' => date('Y-m-d', $docIssueDate / 1000),
+                        'end' => date('Y-m-d', $docExpirationDate / 1000),
+                        'docNumber' => $docNumber,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                } else {
+                    DB::table('user_data')->insertGetId([
+                        'firstName' => $firstName,
+                        'lastName' => $lastName,
+                        'middleName' => $middleName,
+                        'start' => date('Y-m-d', $docIssueDate / 1000),
+                        'end' => date('Y-m-d', $docExpirationDate / 1000),
+                        'docNumber' => $docNumber,
+                        'iin' => $iin,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                }
+                $data = base64_decode($image);
+                Storage::put($iin . '.png', $data);
+                $result['name'] = $firstName;
+                $result['surname'] = $lastName;
+                $result['fatherName'] = $middleName;
+                $result['docNumber'] = $docNumber;
+                $result['docGiven'] = $docGiven;
+                $result['startGiven'] = $docGiven;
+                $result['endGiven'] = $docIssueDate;
+
+                $result['success'] = true;
+            }catch (RequestException $e){
+                if ($e->hasResponse()){
+                    $response = $e->getResponse();
+                    $status = $response->getStatusCode();
+                    print_r($status);
+                }
             }
-            $data = base64_decode($image);
-            Storage::put($iin . '.png', $data);
-            $result['name'] = $firstName;
-            $result['surname'] = $lastName;
-            $result['fatherName'] = $middleName;
-            $result['docNumber'] = $docNumber;
-            $result['docGiven'] = $docGiven;
-            $result['startGiven'] = $docGiven;
-            $result['endGiven'] = $docIssueDate;
 
-            $result['success'] = true;
         } while (false);
         return response()->json($result);
     }
