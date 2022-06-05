@@ -193,7 +193,7 @@ class BiometriaController extends Controller
                 $result['fatherName'] = $middleName;
                 $result['docNumber'] = $docNumber;
                 $result['docGiven'] = $docGiven;
-                $result['startGiven'] = $docGiven;
+                $result['startGiven'] = $docIssueDate;
                 $result['endGiven'] = $docIssueDate;
 
                 $result['success'] = true;
