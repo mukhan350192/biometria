@@ -201,7 +201,7 @@ class BiometriaController extends Controller
                 if ($e->hasResponse()){
                     $response = $e->getResponse();
                     $status = $response->getStatusCode();
-                    print_r($status);
+                    print_r($response);
                     if ($status == 401){
                         $result['message'] = 'Код не совпадает';
                         break;
