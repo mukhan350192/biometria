@@ -159,7 +159,6 @@ class BiometriaController extends Controller
                 $docIssueDate = $t['data']['domain']['docIssuedDate'];
                 $docExpirationDate = $t['data']['domain']['docExpirationDate'];
                 $docNumber = $t['data']['domain']['docNumber'];
-                print_r($t['data']['domain']);
                 $docGiven = $t['data']['common']['docIssuer']['nameRu'];
                 $user = DB::table('user_data')->where('iin', $iin)->first();
                 if ($user) {
