@@ -201,13 +201,26 @@ class BiometriaController extends Controller
                 if ($e->hasResponse()){
                     $response = $e->getResponse();
                     $status = $response->getStatusCode();
-                    print_r($response->getBody()->getContents());
-                    if ($status == 401){
-                        $result['message'] = 'Код не совпадает';
+                    $response = $response->getBody()->getContents();
+                    $response = json_decode($response,true);
+                    if (isset($response['code']) && $response['code'] == 1){
+                        $result['message'] = 'Ошибка авторизации';
                         break;
                     }
-
+                    if ($status == 500){
+                        $result['message'] = 'Внутренные ошибки ПКБ';
+                        break;
+                    }
+                    if ($status == 400 && $response['code'] == 3){
+                        $result['message'] = $response['message'];
+                        break;
+                    }
+                    if ($status == 404){
+                        $result['message'] = 'Не передан документ';
+                        break;
+                    }
                 }
+                break;
             }
 
         } while (false);
