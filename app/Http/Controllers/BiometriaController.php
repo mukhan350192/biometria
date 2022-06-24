@@ -490,10 +490,11 @@ class BiometriaController extends Controller
 
             $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
             $xml = new SimpleXMLElement($output);
-            var_dump($xml);
-            die();
+
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
+            var_dump($similarity);
+            die();
 
             $file = $request->file('photo');
             $s = Storage::put('selfie', $file);
