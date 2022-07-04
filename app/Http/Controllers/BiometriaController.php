@@ -515,4 +515,55 @@ class BiometriaController extends Controller
 
         return response()->json($result);
     }
+
+    public function checkLive(Request $request){
+        $photo = $request->file('photo');
+        $result['success'] = false;
+        do{
+            if(!$photo){
+                $result['message'] = 'Не передан фото';
+                break;
+            }
+            $fileName = $photo->getClientOriginalName();
+            $extension = $photo->getClientOriginalExtension();
+            $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
+            $xml = "
+         <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
+ <soapenv:Header>
+   <ws:CigWsHeader
+    xmlns=''
+    xmlns:ns3='http://ws.creditinfo.com/'>
+    <ws:Culture>ru-RU</ws:Culture>
+    <ws:Password>970908350192</ws:Password>
+    <ws:UserName>7471656497</ws:UserName>
+    <ws:Version>2</ws:Version>
+    </ws:CigWsHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ws:Liveness>
+         <ws:photoBody>
+         $photo
+         </ws:photoBody>
+         <ws:filename>$fileName</ws:filename>
+         <ws:format>image/$extension</ws:format>
+         <ws:os>UNKNOWN</ws:os>
+   </soapenv:Body>
+</soapenv:Envelope>
+         ";
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'text/xml'
+                ],
+                'body' => $xml
+            ];
+
+            $client = new Client(['verify' => false]);
+            $response = $client->request('POST', $mainUrl, $options);
+            $response = $response->getBody()->getContents();
+            $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
+            $xml = new SimpleXMLElement($output);
+            print_r($xml);
+        }while(false);
+        return response()->json($result);
+    }
 }
