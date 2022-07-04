@@ -526,6 +526,7 @@ class BiometriaController extends Controller
             }
             $fileName = $photo->getClientOriginalName();
             $extension = $photo->getClientOriginalExtension();
+            $photo = base64_encode($photo);
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
          <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
