@@ -559,9 +559,17 @@ class BiometriaController extends Controller
             ];
 
             $client = new Client(['verify' => false]);
-            $response = $client->request('POST', $mainUrl, $options);
-            $status = $response->getStatusCode();
-            print_r($status);
+            try{
+                $response = $client->request('POST', $mainUrl, $options);
+
+            }catch (RequestException $e){
+                if ($e->hasResponse()){
+                    $response = $e->getResponse();
+                    $status = $response->getStatusCode();
+                    print_r($status);
+                    print_r($response->getReasonPhrase());
+                }
+            }
             die();
             $response = $response->getBody()->getContents();
             $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
