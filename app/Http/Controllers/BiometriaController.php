@@ -559,6 +559,9 @@ class BiometriaController extends Controller
 
             $client = new Client(['verify' => false]);
             $response = $client->request('POST', $mainUrl, $options);
+            $status = $response->getStatusCode();
+            print_r($status);
+            die();
             $response = $response->getBody()->getContents();
             $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
             $xml = new SimpleXMLElement($output);
