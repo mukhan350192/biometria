@@ -547,6 +547,7 @@ class BiometriaController extends Controller
          <ws:filename>$fileName</ws:filename>
          <ws:format>image/$extension</ws:format>
          <ws:os>UNKNOWN</ws:os>
+         </ws:Liveness>
    </soapenv:Body>
 </soapenv:Envelope>
          ";
