@@ -541,14 +541,14 @@ class BiometriaController extends Controller
     </ws:CigWsHeader>
    </soapenv:Header>
    <soapenv:Body>
-      <ws:Liveness>
+      <ws:LivenessRequest>
          <ws:photoBody>
          $photo
          </ws:photoBody>
          <ws:filename>123.jpg</ws:filename>
          <ws:format>image/$extension</ws:format>
          <ws:os>UNKNOWN</ws:os>
-         </ws:Liveness>
+         </ws:LivenessRequest>
    </soapenv:Body>
 </soapenv:Envelope>
          ";
