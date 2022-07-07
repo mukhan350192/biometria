@@ -558,10 +558,11 @@ class BiometriaController extends Controller
                 ],
                 'body' => $xml
             ];
-            print_r($xml);
+
             $client = new Client(['verify' => false]);
             try{
                 $response = $client->request('POST', $mainUrl, $options);
+                print_r($response->getBody()->getContents());
 
             }catch (RequestException $e){
                 if ($e->hasResponse()){
