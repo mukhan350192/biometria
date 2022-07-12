@@ -90,9 +90,9 @@ class BiometriaController extends Controller
     public function takeDocs(Request $request)
     {
         $code = $request->input('code');
-        $name = $request->input('name');
-        $lastName = $request->input('lastName');
-        $middleName = $request->input('middleName');
+        $name = trim($request->input('name'));
+        $lastName = trim($request->input('lastName'));
+        $middleName = trim($request->input('middleName'));
         $iin = $request->input('iin');
         $result['success'] = false;
         do {
