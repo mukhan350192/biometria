@@ -204,6 +204,7 @@ class BiometriaController extends Controller
                     $response = json_decode($response,true);
                     if (isset($response['code']) && $response['code'] == 1){
                         $result['message'] = 'Ошибка авторизации';
+                        $result['code'] = 1;
                         break;
                     }
                     if ($status == 500){
