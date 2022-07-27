@@ -28,12 +28,12 @@ class BiometriaController extends Controller
                 break;
             }
             $client = new Client(['verify' => false]);
-                $response = $client->get('https://secure2.1cb.kz/fcbid-otp/api/v1/login', [
-                    'headers' => [
-                        'Authorization' => 'Basic ' . base64_encode('7471656497:970908350192'),
-                        'Content-Type' => 'application/json',
-                        'Accept' => 'application/json',
-                    ]
+            $response = $client->get('https://secure2.1cb.kz/fcbid-otp/api/v1/login', [
+                'headers' => [
+                    'Authorization' => 'Basic ' . base64_encode('7471656497:970908350192'),
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ]
             ]);
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
@@ -65,11 +65,11 @@ class BiometriaController extends Controller
             $status = $res->getStatusCode();
             $response = $res->getBody()->getContents();
             $response = json_decode($response, true);
-            if (isset($response['errorCode']) && $response['errorCode'] == 404){
+            if (isset($response['errorCode']) && $response['errorCode'] == 404) {
                 $result['message'] = 'Не найден в БМГ';
                 break;
             }
-            if (isset($status) && $status == 500){
+            if (isset($status) && $status == 500) {
                 $result['message'] = 'Не найден в БМГ';
                 break;
             }
@@ -122,18 +122,18 @@ class BiometriaController extends Controller
                 'Content-Type' => 'application/json',
                 'Consent-Confirmed' => 1,
             ];
-            $birth = str_split($iin,1);
-            if ($birth[6] == 3){
-                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'19'.$birth[0].$birth[1];
+            $birth = str_split($iin, 1);
+            if ($birth[6] == 3) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '19' . $birth[0] . $birth[1];
             }
-            if ($birth[6] == 4){
-                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'19'.$birth[0].$birth[1];
+            if ($birth[6] == 4) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '19' . $birth[0] . $birth[1];
             }
-            if ($birth[6] == 5){
-                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'20'.$birth[0].$birth[1];
+            if ($birth[6] == 5) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '20' . $birth[0] . $birth[1];
             }
-            if ($birth[6] == 6){
-                $birthday = $birth[4].$birth[5].'.'.$birth[2].$birth[3].'.'.'20'.$birth[0].$birth[1];
+            if ($birth[6] == 6) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '20' . $birth[0] . $birth[1];
             }
             $body = [
                 'ciin' => $iin,
@@ -143,7 +143,7 @@ class BiometriaController extends Controller
                 'middle_name' => $middleName,
                 'birthday' => $birthday,
             ];
-            try{
+            try {
                 $res = $client->post($url, [
                     'headers' => $headers,
                     'body' => json_encode($body),
@@ -196,26 +196,26 @@ class BiometriaController extends Controller
                 $result['endGiven'] = $docIssueDate;
 
                 $result['success'] = true;
-            }catch (RequestException $e){
-                if ($e->hasResponse()){
+            } catch (RequestException $e) {
+                if ($e->hasResponse()) {
                     $response = $e->getResponse();
                     $status = $response->getStatusCode();
                     $response = $response->getBody()->getContents();
-                    $response = json_decode($response,true);
-                    if (isset($response['code']) && $response['code'] == 1){
+                    $response = json_decode($response, true);
+                    if (isset($response['code']) && $response['code'] == 1) {
                         $result['message'] = 'Ошибка авторизации';
                         $result['code'] = 1;
                         break;
                     }
-                    if ($status == 500){
+                    if ($status == 500) {
                         $result['message'] = 'Внутренные ошибки ПКБ';
                         break;
                     }
-                    if ($status == 400 && $response['code'] == 3){
+                    if ($status == 400 && $response['code'] == 3) {
                         $result['message'] = $response['message'];
                         break;
                     }
-                    if ($status == 404){
+                    if ($status == 404) {
                         $result['message'] = 'Не передан документ';
                         break;
                     }
@@ -418,7 +418,8 @@ class BiometriaController extends Controller
         print_r($response);
     }
 
-    public function comparePhotoManual(Request $request){
+    public function comparePhotoManual(Request $request)
+    {
         $photo = $request->file('photo');
         $iin = $request->input('iin');
         $leadID = $request->input('leadID');
@@ -519,11 +520,12 @@ class BiometriaController extends Controller
         return response()->json($result);
     }
 
-    public function checkLive(Request $request){
+    public function checkLive(Request $request)
+    {
         $photo = $request->file('photo');
         $result['success'] = false;
-        do{
-            if(!$photo){
+        do {
+            if (!$photo) {
                 $result['message'] = 'Не передан фото';
                 break;
             }
@@ -563,12 +565,12 @@ class BiometriaController extends Controller
             ];
 
             $client = new Client(['verify' => false]);
-            try{
+            try {
                 $response = $client->request('POST', $mainUrl, $options);
                 print_r($response->getBody()->getContents());
 
-            }catch (RequestException $e){
-                if ($e->hasResponse()){
+            } catch (RequestException $e) {
+                if ($e->hasResponse()) {
                     $response = $e->getResponse();
                     $status = $response->getStatusCode();
                     print_r($status);
@@ -580,7 +582,86 @@ class BiometriaController extends Controller
             $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
             $xml = new SimpleXMLElement($output);
             print_r($xml);
-        }while(false);
+        } while (false);
+        return response()->json($result);
+    }
+
+    public function veriface(Request $request)
+    {
+        $photo = $request->file('photo');
+        $iin = $request->input('iin');
+        $leadID = $request->input('leadID');
+        $doc = $request->file('doc');
+        $result['success'] = false;
+        do {
+
+
+            $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
+            $ApiSecret = "9ab3a51f7d5acbf20fc2a778516433bb";
+
+            $timestamp = time();
+            $person_id = Str::random(8);
+            $host = "https://services.verigram.cloud";
+            $path = "/resources/access-token?person_id=" . $person_id;
+            $url = $host . $path;
+
+            $signable_str = $timestamp . $path;
+
+            $hmac_digest = hash_hmac('sha256', $signable_str, $ApiSecret, false);
+
+
+            $headers = [
+                'X-Verigram-Api-Version' => '1.1',
+                'X-Verigram-Api-Key' => $ApiKey,
+                'X-Verigram-Hmac-SHA256' => $hmac_digest,
+                'X-Verigram-Ts' => $timestamp,
+            ];
+            $http = new Client(['verify' => false, 'headers' => $headers]);
+            $response = $http->get($url);
+
+            $response = $response->getBody()->getContents();
+            $response = json_decode($response, true);
+            $token = $response['access_token'];
+            $url = "https://services.verigram.ai:8443/s/veriface";
+            $headers = [
+                'Content-Type' => 'multipart/form-data',
+                'X-Verigram-Access-Token' => $token,
+                'X-Verigram-Person-Id' => $person_id,
+                'Content-Disposition' => 'form-data',
+            ];
+            var_dump($headers);
+        //    $one = Storage::put('selfie',$photo);
+          //  $two = Storage::put('selfie',$doc);
+
+            //$path = Storage::disk('local')->put('selfie',$photo);
+            //var_dump($path);
+            //var_dump(fopen('storage/app/selfie/QprDkDHBdLfEqj5sBbSzMRd5wlucBq1IVZmPvx82.jpg','r'));
+            //$storagePath = Storage::disk('local')->get('photo/5fbV8ZLXjZY6Vl3ro1xo7dpY3ETHWiXdqaQIJi73.jpg');
+            //var_dump($storagePath);
+
+            try {
+                $response = $http->request('POST',$url, [
+                    'headers' => $headers,
+                    'multipart' => [
+                        [
+                            'name' => 'photo',
+                            'contents' => $request->input('photo'),
+                            'filename' => 'test.png',
+                        ],
+                        [
+                            'name' => 'doc',
+                            'contents' => $request->input('doc'),
+                            'filename' => 'doc.png',
+                        ]
+                    ]
+                ]);
+                var_dump($response->getBody()->getContents());
+            } catch (RequestException $e) {
+                if ($e->hasResponse()) {
+                    var_dump($e->getMessage());
+                }
+            }
+        } while (false);
         return response()->json($result);
     }
 }

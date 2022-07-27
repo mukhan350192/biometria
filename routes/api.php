@@ -27,3 +27,4 @@ Route::post('/upload',[BiometriaController::class,'upload']);
 Route::post('/upload',[BiometriaController::class,'upload']);
 Route::post('/standard',[BiometriaController::class,'standard']);
 Route::post('/checkLive',[BiometriaController::class,'checkLive']);
+Route::post('/veriface',[BiometriaController::class,'veriface']);
