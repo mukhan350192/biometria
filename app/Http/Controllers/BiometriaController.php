@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use CURLFile;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
@@ -593,7 +594,25 @@ class BiometriaController extends Controller
         $leadID = $request->input('leadID');
         $doc = $request->file('doc');
         $result['success'] = false;
+
         do {
+            if (!$photo){
+                $result['message'] = 'Не передан фото';
+                break;
+            }
+            if (!$iin){
+                $result['message'] = 'Не передан иин';
+                break;
+            }
+            if (!$leadID){
+                $result['message'] = 'Не передан номер заявки';
+                break;
+            }
+            if (!$doc){
+                $result['message'] = 'Не передан фото уд лич';
+                break;
+            }
+            //var_dump(Storage::disk('local')->exists('photo/ESU2c1LgSZfLZZIc5WDb81fZfJqbMsygkd5qTROH.jpg'));
 
 
             $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
@@ -622,45 +641,45 @@ class BiometriaController extends Controller
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             $token = $response['access_token'];
-            $url = "https://services.verigram.ai:8443/s/veriface";
-            $headers = [
-                'Content-Type' => 'multipart/form-data',
-                'X-Verigram-Access-Token' => $token,
-                'X-Verigram-Person-Id' => $person_id,
-                'Content-Disposition' => 'form-data',
+
+            $first = Storage::put('selfie',$photo);
+            $second = Storage::put('',$doc);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://services.verigram.ai:8443/s/veriface');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+
+
+            $post = [
+                'photo' => new CURLFile(Storage::path(''.$first)),
+                'doc' => new CURLFile(Storage::path(''.$second)),
             ];
-            var_dump($headers);
-        //    $one = Storage::put('selfie',$photo);
-          //  $two = Storage::put('selfie',$doc);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
-            //$path = Storage::disk('local')->put('selfie',$photo);
-            //var_dump($path);
-            //var_dump(fopen('storage/app/selfie/QprDkDHBdLfEqj5sBbSzMRd5wlucBq1IVZmPvx82.jpg','r'));
-            //$storagePath = Storage::disk('local')->get('photo/5fbV8ZLXjZY6Vl3ro1xo7dpY3ETHWiXdqaQIJi73.jpg');
-            //var_dump($storagePath);
+            $headers = array();
+            $headers[] = 'X-Verigram-Access-Token: '.$token;
+            $headers[] = 'X-Verigram-Person-Id: '.$person_id;
+            $headers[] = 'Content-Type: multipart/form-data';
+            $headers[] = 'Content-Disposition: form-data';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-            try {
-                $response = $http->request('POST',$url, [
-                    'headers' => $headers,
-                    'multipart' => [
-                        [
-                            'name' => 'photo',
-                            'contents' => $request->input('photo'),
-                            'filename' => 'test.png',
-                        ],
-                        [
-                            'name' => 'doc',
-                            'contents' => $request->input('doc'),
-                            'filename' => 'doc.png',
-                        ]
-                    ]
-                ]);
-                var_dump($response->getBody()->getContents());
-            } catch (RequestException $e) {
-                if ($e->hasResponse()) {
-                    var_dump($e->getMessage());
-                }
+            $res = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
             }
+            curl_close($ch);
+
+            $res = json_decode($res);
+            $similarity = $res->Similarity;
+            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$first&selfie=$second";
+
+            $client = new Client(['verify' => false]);
+            $s = $client->get($url);
+            $result['success'] = true;
+            $result['similarity'] = $similarity;
+
+
         } while (false);
         return response()->json($result);
     }

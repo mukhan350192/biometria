@@ -13,7 +13,8 @@
         "laravel/tinker": "^2.7",
         "ext-simplexml": "*",
         "ext-json": "*",
-        "ext-libxml": "*"
+        "ext-libxml": "*",
+      "ext-curl": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
