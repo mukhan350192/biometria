@@ -628,12 +628,12 @@ class BiometriaController extends Controller
             $image = str_replace(' ', '+', $image);
             $imageName = Str::random(10) . '.jpeg';
             $first = Storage::disk('local')->put($imageName, base64_decode($image));
-
+            var_dump($first);
             $image = str_replace('data:image/jpeg;base64,', '', $doc);
             $image = str_replace(' ', '+', $image);
             $imageName = Str::random(10) . '.jpeg';
             $second = Storage::disk('local')->put($imageName, base64_decode($image));
-
+            var_dump($second);
 
             $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
             $ApiSecret = "9ab3a51f7d5acbf20fc2a778516433bb";
@@ -686,7 +686,6 @@ class BiometriaController extends Controller
                 echo 'Error:' . curl_error($ch);
             }
             curl_close($ch);
-
             $res = json_decode($res);
             print_r($res);
             $similarity = $res->Similarity;
