@@ -669,8 +669,8 @@ class BiometriaController extends Controller
 
 
             $post = [
-                'photo' => new CURLFile(Storage::path('' . $first)),
-                'doc' => new CURLFile(Storage::path('' . $second)),
+                'photo' => new CURLFile(Storage::path($first)),
+                'doc' => new CURLFile(Storage::path($second)),
             ];
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
