@@ -303,11 +303,20 @@ class BiometriaController extends Controller
             ];
 
             $client = new Client(['verify' => false]);
-            $response = $client->request('POST', $mainUrl, $options);
-            $response = $response->getBody()->getContents();
-            $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
-            $xml = new SimpleXMLElement($output);
+            try{
+                $response = $client->request('POST', $mainUrl, $options);
 
+                $response = $response->getBody()->getContents();
+                $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
+                $xml = new SimpleXMLElement($output);
+                var_dump($xml);
+            }catch (RequestException $e){
+                if ($e->hasResponse()){
+                    var_dump($e->getResponse()->getBody());
+                }
+            }
+
+            die();
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
 
