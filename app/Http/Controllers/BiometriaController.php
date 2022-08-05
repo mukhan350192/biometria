@@ -259,7 +259,10 @@ class BiometriaController extends Controller
             $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
             $photo2 = file_get_contents($url);
             $photo2 = base64_encode($photo2);
-
+            $image = str_replace('data:image/jpeg;base64,', '', $photo);
+            $image = str_replace(' ', '+', $image);
+            $imageName = Str::random(10) . '.jpeg';
+            $file = Storage::disk('local')->put($imageName, base64_decode($image));
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
          <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
@@ -278,8 +281,8 @@ class BiometriaController extends Controller
          <ws:photoBody1>
          $photo
          </ws:photoBody1>
-         <ws:filename1>$fileName</ws:filename1>
-         <ws:format1>image/$extension</ws:format1>
+         <ws:filename1>$imageName</ws:filename1>
+         <ws:format1>image/jpeg</ws:format1>
          <ws:os1>DESKTOP</ws:os1>
          <ws:photoBody2>
          $photo2
@@ -306,10 +309,7 @@ class BiometriaController extends Controller
             $xml = new SimpleXMLElement($output);
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
-            $image = str_replace('data:image/jpeg;base64,', '', $photo);
-            $image = str_replace(' ', '+', $image);
-            $imageName = Str::random(10) . '.jpeg';
-            $file = Storage::disk('local')->put($imageName, base64_decode($image));
+
 
 
 
