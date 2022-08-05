@@ -628,7 +628,7 @@ class BiometriaController extends Controller
             $image = str_replace(' ', '+', $image);
             $imageName = Str::random(10) . '.jpeg';
             $first = Storage::disk('local')->put($imageName, base64_decode($image));
-            var_dump($first);
+            var_dump($imageName);
             $image = str_replace('data:image/jpeg;base64,', '', $doc);
             $image = str_replace(' ', '+', $image);
             $imageName = Str::random(10) . '.jpeg';
@@ -636,7 +636,7 @@ class BiometriaController extends Controller
             var_dump($second);
 
             $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
-            $ApiSecret = "9ab3a51f7d5acbf20fc2a778516433bb";
+            $ApiSecret = "9ab3a51f7d5acbf20fc2a77851 6433bb";
 
             $timestamp = time();
             $person_id = Str::random(8);
