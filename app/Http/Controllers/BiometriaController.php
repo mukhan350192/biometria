@@ -631,8 +631,8 @@ class BiometriaController extends Controller
             var_dump($imageName);
             $image = str_replace('data:image/jpeg;base64,', '', $doc);
             $image = str_replace(' ', '+', $image);
-            $imageName = Str::random(10) . '.jpeg';
-            $second = Storage::disk('local')->put($imageName, base64_decode($image));
+            $imageName2 = Str::random(10) . '.jpeg';
+            $second = Storage::disk('local')->put($imageName2, base64_decode($image));
             var_dump($second);
 
             $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
@@ -669,8 +669,8 @@ class BiometriaController extends Controller
 
 
             $post = [
-                'photo' => new CURLFile(Storage::path($first)),
-                'doc' => new CURLFile(Storage::path($second)),
+                'photo' => new CURLFile(Storage::path($imageName)),
+                'doc' => new CURLFile(Storage::path($imageName2)),
             ];
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
@@ -800,5 +800,11 @@ class BiometriaController extends Controller
         } while (false);
 
         return response()->json($result);
+    }
+
+    public function testing(Request $request){
+        $photo = $request->file('photo');
+        $s = Storage::put('selfie',$photo);
+        var_dump($s);
     }
 }
