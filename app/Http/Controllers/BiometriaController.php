@@ -234,7 +234,7 @@ class BiometriaController extends Controller
      */
     public function comparePhotos(Request $request)
     {
-        $photo = $request->file('photo');
+        $photo = $request->input('photo');
         $iin = $request->input('iin');
         $leadID = $request->input('leadID');
         $fileName = $request->input('fileName');
@@ -259,7 +259,7 @@ class BiometriaController extends Controller
             $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
             $photo2 = file_get_contents($url);
             $photo2 = base64_encode($photo2);
-            $photo = base64_encode(file_get_contents($photo->path()));
+
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
          <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
@@ -306,10 +306,13 @@ class BiometriaController extends Controller
             $xml = new SimpleXMLElement($output);
 
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
+            $image = str_replace('data:image/jpeg;base64,', '', $photo);
+            $image = str_replace(' ', '+', $image);
+            $imageName = Str::random(10) . '.jpeg';
+            $file = Storage::disk('local')->put($imageName, base64_decode($image));
 
 
-            $file = $request->file('photo');
-            $s = Storage::put('selfie', $file);
+
             DB::table('photo_data')->insertGetId([
                 'iin' => $iin,
                 'leadID' => $leadID,
@@ -317,7 +320,7 @@ class BiometriaController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$s";
+            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$file";
 
             $client = new Client(['verify' => false]);
             $s = $client->get($url);
@@ -589,10 +592,10 @@ class BiometriaController extends Controller
 
     public function veriface(Request $request)
     {
-        $photo = $request->file('photo');
+        $photo = $request->input('photo');
         $iin = $request->input('iin');
         $leadID = $request->input('leadID');
-        $doc = $request->file('doc');
+        $doc = $request->input('doc');
         $result['success'] = false;
 
         do {
@@ -612,7 +615,17 @@ class BiometriaController extends Controller
                 $result['message'] = 'Не передан фото уд лич';
                 break;
             }
-            //var_dump(Storage::disk('local')->exists('photo/ESU2c1LgSZfLZZIc5WDb81fZfJqbMsygkd5qTROH.jpg'));
+              // your base64 encoded
+            $image = str_replace('data:image/jpeg;base64,', '', $photo);
+            $image = str_replace(' ', '+', $image);
+            $imageName = Str::random(10) . '.jpeg';
+            $first = Storage::disk('local')->put($imageName, base64_decode($image));
+
+            $image = str_replace('data:image/jpeg;base64,', '', $doc);
+            $image = str_replace(' ', '+', $image);
+            $imageName = Str::random(10) . '.jpeg';
+            $second = Storage::disk('local')->put($imageName, base64_decode($image));
+
 
 
             $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
@@ -641,9 +654,6 @@ class BiometriaController extends Controller
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             $token = $response['access_token'];
-
-            $first = Storage::put('selfie',$photo);
-            $second = Storage::put('',$doc);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, 'https://services.verigram.ai:8443/s/veriface');
