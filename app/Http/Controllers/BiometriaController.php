@@ -303,15 +303,15 @@ class BiometriaController extends Controller
             ];
 
             $client = new Client(['verify' => false]);
-            try{
+            try {
                 $response = $client->request('POST', $mainUrl, $options);
 
                 $response = $response->getBody()->getContents();
                 $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
                 $xml = new SimpleXMLElement($output);
                 var_dump($xml);
-            }catch (RequestException $e){
-                if ($e->hasResponse()){
+            } catch (RequestException $e) {
+                if ($e->hasResponse()) {
                     var_dump($e->getResponse()->getStatusCode());
                     var_dump($e->getResponse()->getReasonPhrase());
                 }
@@ -319,8 +319,6 @@ class BiometriaController extends Controller
 
             die();
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
-
-
 
 
             DB::table('photo_data')->insertGetId([
@@ -609,23 +607,23 @@ class BiometriaController extends Controller
         $result['success'] = false;
 
         do {
-            if (!$photo){
+            if (!$photo) {
                 $result['message'] = 'Не передан фото';
                 break;
             }
-            if (!$iin){
+            if (!$iin) {
                 $result['message'] = 'Не передан иин';
                 break;
             }
-            if (!$leadID){
+            if (!$leadID) {
                 $result['message'] = 'Не передан номер заявки';
                 break;
             }
-            if (!$doc){
+            if (!$doc) {
                 $result['message'] = 'Не передан фото уд лич';
                 break;
             }
-              // your base64 encoded
+            // your base64 encoded
             $image = str_replace('data:image/jpeg;base64,', '', $photo);
             $image = str_replace(' ', '+', $image);
             $imageName = Str::random(10) . '.jpeg';
@@ -635,7 +633,6 @@ class BiometriaController extends Controller
             $image = str_replace(' ', '+', $image);
             $imageName = Str::random(10) . '.jpeg';
             $second = Storage::disk('local')->put($imageName, base64_decode($image));
-
 
 
             $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
@@ -672,14 +669,14 @@ class BiometriaController extends Controller
 
 
             $post = [
-                'photo' => new CURLFile(Storage::path(''.$first)),
-                'doc' => new CURLFile(Storage::path(''.$second)),
+                'photo' => new CURLFile(Storage::path('' . $first)),
+                'doc' => new CURLFile(Storage::path('' . $second)),
             ];
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
             $headers = array();
-            $headers[] = 'X-Verigram-Access-Token: '.$token;
-            $headers[] = 'X-Verigram-Person-Id: '.$person_id;
+            $headers[] = 'X-Verigram-Access-Token: ' . $token;
+            $headers[] = 'X-Verigram-Person-Id: ' . $person_id;
             $headers[] = 'Content-Type: multipart/form-data';
             $headers[] = 'Content-Disposition: form-data';
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -701,6 +698,107 @@ class BiometriaController extends Controller
 
 
         } while (false);
+        return response()->json($result);
+    }
+
+    public function compareTest(Request $request)
+    {
+        $photo = $request->file('photo');
+        $iin = $request->input('iin');
+        $leadID = $request->input('leadID');
+        $fileName = $request->input('fileName');
+        $extension = $request->input('extension');
+        $result['success'] = false;
+        do {
+            if (!$photo) {
+                $result['message'] = 'Не передан фото';
+                break;
+            }
+            if (!$iin) {
+                $result['message'] = 'Не передан иин';
+                break;
+            }
+            if (!$leadID) {
+                $result['message'] = 'Не передан лид';
+                break;
+            }
+
+            // $fileName = $photo->getClientOriginalName();
+            // $extension = $photo->getClientOriginalExtension();
+            $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
+            $photo2 = file_get_contents($url);
+            $photo2 = base64_encode($photo2);
+            $photo = base64_encode($photo);
+            $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
+            $xml = "
+         <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
+ <soapenv:Header>
+   <ws:CigWsHeader
+    xmlns=''
+    xmlns:ns3='http://ws.creditinfo.com/'>
+    <ws:Culture>ru-RU</ws:Culture>
+    <ws:Password>970908350192</ws:Password>
+    <ws:UserName>7471656497</ws:UserName>
+    <ws:Version>2</ws:Version>
+    </ws:CigWsHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ws:ComparePhoto2>
+         <ws:photoBody1>
+         $photo
+         </ws:photoBody1>
+         <ws:filename1>$fileName</ws:filename1>
+         <ws:format1>image/jpeg</ws:format1>
+         <ws:os1>DESKTOP</ws:os1>
+         <ws:photoBody2>
+         $photo2
+         </ws:photoBody2>
+         <ws:filename2>$iin.png</ws:filename2>
+         <ws:format2>image/png</ws:format2>
+           <ws:os2>DESKTOP</ws:os2>
+      </ws:ComparePhoto2>
+   </soapenv:Body>
+</soapenv:Envelope>
+         ";
+
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'text/xml'
+                ],
+                'body' => $xml
+            ];
+
+            $client = new Client(['verify' => false]);
+
+            $response = $client->request('POST', $mainUrl, $options);
+
+            $response = $response->getBody()->getContents();
+            $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
+            $xml = new SimpleXMLElement($output);
+
+            $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
+
+
+            DB::table('photo_data')->insertGetId([
+                'iin' => $iin,
+                'leadID' => $leadID,
+                'selfie' => 'test',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            $file = $request->file('photo');
+            $s = Storage::put('selfie',$file);
+
+            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$file";
+
+            $client = new Client(['verify' => false]);
+            $s = $client->get($url);
+            $result['success'] = true;
+            $result['similarity'] = $similarity;
+
+
+        } while (false);
+
         return response()->json($result);
     }
 }
