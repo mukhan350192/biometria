@@ -312,7 +312,7 @@ class BiometriaController extends Controller
                 var_dump($xml);
             }catch (RequestException $e){
                 if ($e->hasResponse()){
-                    var_dump($e->getResponse()->getBody());
+                    var_dump($e->getResponse()->getReasonPhrase());
                 }
             }
 
