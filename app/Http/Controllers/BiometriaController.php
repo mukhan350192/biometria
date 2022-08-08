@@ -688,7 +688,7 @@ class BiometriaController extends Controller
             $res = json_decode($res);
 
             $similarity = $res->Similarity;
-            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$first&selfie=$second";
+            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$imageName&selfie=$imageName2";
 
             $client = new Client(['verify' => false]);
             $s = $client->get($url);
