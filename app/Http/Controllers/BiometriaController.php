@@ -727,7 +727,7 @@ class BiometriaController extends Controller
             $url = 'http://178.170.221.75/biometria/storage/app/' . $iin . '.png';
             $photo2 = file_get_contents($url);
             $photo2 = base64_encode($photo2);
-            $photo = base64_encode($photo);
+            $photo = base64_encode(file_get_contents($photo));
             $mainUrl = 'https://secure2.1cb.kz/Biometry/BiometryService?wsdl';
             $xml = "
          <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ws='http://ws.creditinfo.com/'>
