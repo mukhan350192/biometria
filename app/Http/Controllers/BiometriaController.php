@@ -636,7 +636,7 @@ class BiometriaController extends Controller
             var_dump($second);
 
             $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
-            $ApiSecret = "9ab3a51f7d5acbf20fc2a77851 6433bb";
+            $ApiSecret = "9ab3a51f7d5acbf20fc2a778516433bb";
 
             $timestamp = time();
             $person_id = Str::random(8);
@@ -687,7 +687,7 @@ class BiometriaController extends Controller
             }
             curl_close($ch);
             $res = json_decode($res);
-            print_r($res);
+
             $similarity = $res->Similarity;
             $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$first&selfie=$second";
 
