@@ -721,6 +721,7 @@ class BiometriaController extends Controller
                 $result['message'] = 'Не передан лид';
                 break;
             }
+            $data = explode("base64,",$photo);
 
             // $fileName = $photo->getClientOriginalName();
             // $extension = $photo->getClientOriginalExtension();
@@ -744,7 +745,7 @@ class BiometriaController extends Controller
    <soapenv:Body>
       <ws:ComparePhoto2>
          <ws:photoBody1>
-         $photo
+         $data[1]
          </ws:photoBody1>
          <ws:filename1>$fileName</ws:filename1>
          <ws:format1>image/jpeg</ws:format1>
