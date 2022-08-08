@@ -759,7 +759,7 @@ class BiometriaController extends Controller
    </soapenv:Body>
 </soapenv:Envelope>
          ";
-
+            print_r($xml);
             $options = [
                 'headers' => [
                     'Content-Type' => 'text/xml'
