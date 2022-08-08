@@ -279,7 +279,7 @@ class BiometriaController extends Controller
    <soapenv:Body>
       <ws:ComparePhoto2>
          <ws:photoBody1>
-         $photo
+         $image
          </ws:photoBody1>
          <ws:filename1>$imageName</ws:filename1>
          <ws:format1>image/jpeg</ws:format1>
@@ -309,7 +309,7 @@ class BiometriaController extends Controller
                 $response = $response->getBody()->getContents();
                 $output = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
                 $xml = new SimpleXMLElement($output);
-                var_dump($xml);
+
             } catch (RequestException $e) {
                 if ($e->hasResponse()) {
                     var_dump($e->getResponse()->getStatusCode());
@@ -317,7 +317,6 @@ class BiometriaController extends Controller
                 }
             }
 
-            die();
             $similarity = $xml->SBody->ComparePhotoList->ComparePhotoResult->similarity * 100;
 
 
@@ -328,7 +327,7 @@ class BiometriaController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$file";
+            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$imageName";
 
             $client = new Client(['verify' => false]);
             $s = $client->get($url);
