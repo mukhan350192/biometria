@@ -787,7 +787,7 @@ class BiometriaController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
             $file = $request->file('photo');
-            $s = Storage::put('selfie',$file);
+            $s = Storage::put('selfie', $file);
 
             $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$iin.png&selfie=$file";
 
@@ -802,9 +802,96 @@ class BiometriaController extends Controller
         return response()->json($result);
     }
 
-    public function testing(Request $request){
+    public function testing(Request $request)
+    {
         $photo = $request->file('photo');
-        $s = Storage::put('selfie',$photo);
-        var_dump($s);
+        $iin = $request->input('iin');
+        $leadID = $request->input('leadID');
+        $doc = $request->file('doc');
+        $result['success'] = false;
+
+        do {
+            if (!$photo) {
+                $result['message'] = 'Не передан фото';
+                break;
+            }
+            if (!$iin) {
+                $result['message'] = 'Не передан иин';
+                break;
+            }
+            if (!$leadID) {
+                $result['message'] = 'Не передан номер заявки';
+                break;
+            }
+            if (!$doc) {
+                $result['message'] = 'Не передан фото уд лич';
+                break;
+            }
+            // your base64 encoded
+
+
+            $ApiKey = "PeeKMaNIX9dNL2pB2433rs7zwrs28gGZ";
+            $ApiSecret = "9ab3a51f7d5acbf20fc2a778516433bb";
+
+            $timestamp = time();
+            $person_id = Str::random(8);
+            $host = "https://services.verigram.cloud";
+            $path = "/resources/access-token?person_id=" . $person_id;
+            $url = $host . $path;
+
+            $signable_str = $timestamp . $path;
+
+            $hmac_digest = hash_hmac('sha256', $signable_str, $ApiSecret, false);
+
+            $headers = [
+                'X-Verigram-Api-Version' => '1.1',
+                'X-Verigram-Api-Key' => $ApiKey,
+                'X-Verigram-Hmac-SHA256' => $hmac_digest,
+                'X-Verigram-Ts' => $timestamp,
+            ];
+
+            $http = new Client(['verify' => false, 'headers' => $headers]);
+            $response = $http->get($url);
+            $response = $response->getBody()->getContents();
+            $response = json_decode($response, true);
+            $token = $response['access_token'];
+
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://services.verigram.ai:8443/s/veriface');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            $imageName = Storage::put('selfie', $photo);
+            $imageName2 = Storage::put('selfie', $doc);
+
+            $post = [
+                'photo' => new CURLFile(Storage::path($imageName)),
+                'doc' => new CURLFile(Storage::path($imageName2)),
+            ];
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+
+            $headers = array();
+            $headers[] = 'X-Verigram-Access-Token: ' . $token;
+            $headers[] = 'X-Verigram-Person-Id: ' . $person_id;
+            $headers[] = 'Content-Type: multipart/form-data';
+            $headers[] = 'Content-Disposition: form-data';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $res = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
+            }
+            curl_close($ch);
+
+            $res = json_decode($res);
+            $similarity = $res->Similarity;
+            $url = "https://icredit-crm.kz/api/docs/biometria.php?leadID=$leadID&similarity=$similarity&original=$imageName&selfie=$imageName2";
+
+            $client = new Client(['verify' => false]);
+            $s = $client->get($url);
+            $result['success'] = true;
+            $result['similarity'] = $similarity;
+        } while (false);
+        return response()->json($result);
     }
 }
