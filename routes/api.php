@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('/takeCode',[BiometriaController::class,'takeCode']);
 Route::get('/takeDocs',[BiometriaController::class,'takeDocs']);
+Route::get('/takeDocsTest',[BiometriaController::class,'takeDocsTest']);
 Route::get('/test',[BiometriaController::class,'test']);
 Route::post('/testing',[BiometriaController::class,'testing']);
 Route::post('/comparePhotos',[BiometriaController::class,'comparePhotos']);

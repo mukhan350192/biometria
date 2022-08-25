@@ -228,6 +228,147 @@ class BiometriaController extends Controller
         return response()->json($result);
     }
 
+
+
+    public function takeDocsTest(Request $request){
+        $code = $request->input('code');
+        $name = trim($request->input('name'));
+        $lastName = trim($request->input('lastName'));
+        $middleName = trim($request->input('middleName'));
+        $iin = $request->input('iin');
+        $result['success'] = false;
+        do {
+            if (!$code) {
+                $result['message'] = 'Не передан код';
+                break;
+            }
+            if (!$name) {
+                $result['message'] = 'Не передан имя';
+                break;
+            }
+            if (!$middleName) {
+                $result['message'] = 'Не передан фамилия';
+                break;
+            }
+            $client = new Client(['verify' => false]);
+
+            $data = DB::table('first_data')->where('iin', $iin)->orderByDesc('id')->first();
+            $uuid = $data->requestID;
+            $token = $data->token;
+
+            //$url = "https://secure2.1cb.kz/fcbid-otp/api/v1/get-pdf-document";
+            $url = "https://secure2.1cb.kz/idservice/v2/advanced/digital/docs";
+            $headers = [
+                'Authorization' => 'Bearer ' . $token,
+                'RequestID' => $uuid,
+                'Content-Type' => 'application/json',
+                'Consent-Confirmed' => 1,
+            ];
+            $birth = str_split($iin, 1);
+            if ($birth[6] == 3) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '19' . $birth[0] . $birth[1];
+            }
+            if ($birth[6] == 4) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '19' . $birth[0] . $birth[1];
+            }
+            if ($birth[6] == 5) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '20' . $birth[0] . $birth[1];
+            }
+            if ($birth[6] == 6) {
+                $birthday = $birth[4] . $birth[5] . '.' . $birth[2] . $birth[3] . '.' . '20' . $birth[0] . $birth[1];
+            }
+            $body = [
+                'ciin' => $iin,
+                'code' => $code,
+                'last_name' => $lastName,
+                'first_name' => $name,
+                'middle_name' => $middleName,
+                'birthday' => $birthday,
+            ];
+            try {
+                $res = $client->post($url, [
+                    'headers' => $headers,
+                    'body' => json_encode($body),
+                ]);
+
+                $response = $res->getBody()->getContents();
+                $t = json_decode($response, true);
+
+                $image = $t['data']['domain']['docPhoto'];
+                $firstName = $t['data']['common']['docOwner']['firstName'];
+                $lastName = $t['data']['common']['docOwner']['lastName'];
+                $middleName = $t['data']['common']['docOwner']['middleName'];
+                $docIssueDate = $t['data']['domain']['docIssuedDate'];
+                $docExpirationDate = $t['data']['domain']['docExpirationDate'];
+                $docNumber = $t['data']['domain']['docNumber'];
+                $docGiven = $t['data']['common']['docIssuer']['nameRu'];
+                $user = DB::table('user_data')->where('iin', $iin)->first();
+                if ($user) {
+                    DB::table('user_data')->where('iin', $iin)->update([
+                        'firstName' => $firstName,
+                        'lastName' => $lastName,
+                        'middleName' => $middleName,
+                        'start' => date('Y-m-d', $docIssueDate / 1000),
+                        'end' => date('Y-m-d', $docExpirationDate / 1000),
+                        'docNumber' => $docNumber,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                } else {
+                    DB::table('user_data')->insertGetId([
+                        'firstName' => $firstName,
+                        'lastName' => $lastName,
+                        'middleName' => $middleName,
+                        'start' => date('Y-m-d', $docIssueDate / 1000),
+                        'end' => date('Y-m-d', $docExpirationDate / 1000),
+                        'docNumber' => $docNumber,
+                        'iin' => $iin,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                }
+                $data = base64_decode($image);
+                Storage::put($iin . '.png', $data);
+                $result['name'] = $firstName;
+                $result['surname'] = $lastName;
+                $result['fatherName'] = $middleName;
+                $result['docNumber'] = $docNumber;
+                $result['docGiven'] = $docGiven;
+                $result['startGiven'] = $docIssueDate;
+                $result['endGiven'] = $docIssueDate;
+
+                $result['success'] = true;
+            } catch (RequestException $e) {
+                if ($e->hasResponse()) {
+                    $response = $e->getResponse();
+                    $status = $response->getStatusCode();
+                    $response = $response->getBody()->getContents();
+                    $response = json_decode($response, true);
+                    print_r($response);
+                    if (isset($response['code']) && $response['code'] == 1) {
+                        $result['message'] = 'Ошибка авторизации';
+                        $result['code'] = 1;
+                        break;
+                    }
+                    if ($status == 500) {
+                        $result['message'] = 'Внутренные ошибки ПКБ';
+                        break;
+                    }
+                    if ($status == 400 && $response['code'] == 3) {
+                        $result['message'] = $response['message'];
+                        break;
+                    }
+                    if ($status == 404) {
+                        $result['message'] = 'Не передан документ';
+                        break;
+                    }
+                }
+                break;
+            }
+
+        } while (false);
+        return response()->json($result);
+    }
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Exception
